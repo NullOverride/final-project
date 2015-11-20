@@ -64,8 +64,11 @@ public class Whiteboard extends JFrame {
 		JMenuItem mntmOpen = new JMenuItem("Open..");
 		mnFile.add(mntmOpen);
 		
-		JMenuItem mntmSave = new JMenuItem("Save...");
+		JMenuItem mntmSave = new JMenuItem("Save As XML...");
 		mnFile.add(mntmSave);
+		
+		JMenuItem mntmSaveAsPng = new JMenuItem("Save as PNG...");
+		mnFile.add(mntmSaveAsPng);
 		
 		JMenu mnConnection = new JMenu("Connection");
 		menuBar.add(mnConnection);
