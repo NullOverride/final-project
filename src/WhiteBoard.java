@@ -94,9 +94,17 @@ public class Whiteboard extends JFrame {
 		JButton btnRectangle = new JButton("Rect");
 		btnRectangle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DRect rect = new DRect();
-				can.addShape(rect);
-// TODO : draw the shape				
+				// Yay for random shapes
+				int random = (int) (Math.random() * 400);
+				int random2 = (int) (Math.random() * 400);
+				int random3 = (int) (Math.random() * 200);
+				int random4 = (int) (Math.random() * 200);
+				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
+						Color.green, Color.magenta, Color.orange, Color.YELLOW,
+						Color.pink, Color.LIGHT_GRAY};
+				Color randomColor = colors[(int) (Math.random() * colors.length)];
+				// End randomness
+				can.addShape(new DRectModel(random, random2, random3, random4, randomColor));			
 			}
 		});
 		
