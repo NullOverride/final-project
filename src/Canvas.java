@@ -1,5 +1,7 @@
 
+import java.awt.Graphics;
 import java.util.ArrayList;
+
 import javax.swing.JPanel;
 
 
@@ -10,15 +12,25 @@ public class Canvas extends JPanel {
 		collection = new ArrayList<DShape>();
 	}
 
-	public void paintComponent() {
-
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		for(DShape shape : collection) {
-			shape.paint();
+			shape.draw(g);
 		}
 	}
 	
-	public void addShape(DShape shape) {
-		collection.add(shape);
+	public void addShape(DShapeModel shape) {
+		if (shape instanceof DRectModel) 
+		{
+			DRect rect = new DRect();
+			rect.setColor(shape.getColor());
+			rect.setX(shape.getX());
+			rect.setY(shape.getY());
+			rect.setWidth(shape.getWidth());
+			rect.setHeight(shape.getHeight());
+			collection.add(rect);
+		}
+		repaint();
 	}
 
 
