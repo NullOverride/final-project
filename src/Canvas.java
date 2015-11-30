@@ -30,6 +30,16 @@ public class Canvas extends JPanel {
 			rect.setHeight(shape.getHeight());
 			collection.add(rect);
 		}
+		else if(shape instanceof DOvalModel)
+		{
+			DOval oval = new DOval();
+			oval.setColor(shape.getColor());
+			oval.setX(shape.getX());
+			oval.setY(shape.getY());
+			oval.setWidth(shape.getWidth());
+			oval.setHeight(shape.getHeight());
+			collection.add(oval);
+		}
 		repaint();
 	}
 

@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 
 
 public class DShapeModel {
@@ -24,6 +25,9 @@ public class DShapeModel {
 	
 	public Rectangle getBoundsRect() {
 		return new Rectangle(x, y, width, height);
+	}
+	public Ellipse2D getBoundsOval() {
+		return new Ellipse2D.Double(x, y, width, height);
 	}
 	public Color getColor() {
 		return color;
@@ -51,6 +55,18 @@ public class DShapeModel {
 		this.y = y;
 		this.width = width;
 		this.height = height;
+	}
+	public void setBoundsOval(int x, int y, int width, int height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+	}
+	public void setBoundsOval(Ellipse2D oval) {
+		this.x = (int) oval.getX();
+		this.y = (int) oval.getY();
+		this.width = (int) oval.getWidth();
+		this.height = (int) oval.getHeight();
 	}
 	public void setBoundsRect(Rectangle rect) {
 		this.x = (int) rect.getX();

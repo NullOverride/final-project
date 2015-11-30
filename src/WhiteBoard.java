@@ -19,7 +19,7 @@ import java.awt.Color;
 import javax.swing.JComboBox;
 
 
-public class Whiteboard extends JFrame {
+public class WhiteBoard extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
@@ -32,7 +32,7 @@ public class Whiteboard extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Whiteboard frame = new Whiteboard();
+					WhiteBoard frame = new WhiteBoard();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -44,7 +44,7 @@ public class Whiteboard extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Whiteboard() {
+	public WhiteBoard() {
 		setTitle("White Board Turbo 2000");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -84,7 +84,7 @@ public class Whiteboard extends JFrame {
 		
 		// DRAWING CANVAS
 		
-		Canvas can = new Canvas();
+		final Canvas can = new Canvas();
 		can.setBackground(Color.WHITE);
 		
 		// BUTTONS
@@ -111,6 +111,17 @@ public class Whiteboard extends JFrame {
 		JButton btnNewButton = new JButton("Oval");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				// Yay for random shapes
+				int random = (int) (Math.random() * 400);
+				int random2 = (int) (Math.random() * 400);
+				int random3 = (int) (Math.random() * 200);
+				int random4 = (int) (Math.random() * 200);
+				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
+						Color.green, Color.magenta, Color.orange, Color.YELLOW,
+						Color.pink, Color.LIGHT_GRAY};
+				Color randomColor = colors[(int) (Math.random() * colors.length)];
+				// End randomness
+				can.addShape(new DOvalModel(random, random2, random3, random4, randomColor));	
 			}
 		});
 		
