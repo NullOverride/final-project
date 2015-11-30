@@ -34,6 +34,17 @@ public class Canvas extends JPanel {
 			collection.add(rect);
 			setSelected(rect);
 		}
+		else if(shape instanceof DOvalModel)
+		{
+			DOval oval = new DOval();
+			oval.setColor(shape.getColor());
+			oval.setX(shape.getX());
+			oval.setY(shape.getY());
+			oval.setWidth(shape.getWidth());
+			oval.setHeight(shape.getHeight());
+			collection.add(oval);
+			setSelected(oval);
+		}
 		
 		repaint();
 	}
@@ -52,16 +63,6 @@ public class Canvas extends JPanel {
 			{
 				shape.setColor(color);
 			}
-		}
-		else if(shape instanceof DOvalModel)
-		{
-			DOval oval = new DOval();
-			oval.setColor(shape.getColor());
-			oval.setX(shape.getX());
-			oval.setY(shape.getY());
-			oval.setWidth(shape.getWidth());
-			oval.setHeight(shape.getHeight());
-			collection.add(oval);
 		}
 		repaint();
 	}
