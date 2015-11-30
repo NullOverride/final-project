@@ -5,17 +5,22 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 import javax.swing.JTextField;
 import javax.swing.JTable;
+
 import java.awt.Color;
+
 import javax.swing.JComboBox;
 
 
@@ -129,6 +134,10 @@ public class Whiteboard extends JFrame {
 		JButton btnSetColor = new JButton("Set Color");
 		btnSetColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(can.getSelected() != null)
+				{
+					can.changeColor(JColorChooser.showDialog(null, "Choose a Color", getForeground()));
+				}
 			}
 		});
 		

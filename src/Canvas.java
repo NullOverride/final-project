@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
@@ -6,10 +7,12 @@ import javax.swing.JPanel;
 
 
 public class Canvas extends JPanel {
-	ArrayList<DShape> collection;
+	private ArrayList<DShape> collection;
+	private DShape selected;
 
 	public Canvas(){
 		collection = new ArrayList<DShape>();
+		setSelected(null);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -29,6 +32,26 @@ public class Canvas extends JPanel {
 			rect.setWidth(shape.getWidth());
 			rect.setHeight(shape.getHeight());
 			collection.add(rect);
+			setSelected(rect);
+		}
+		
+		repaint();
+	}
+
+	public DShape getSelected() {
+		return selected;
+	}
+
+	public void setSelected(DShape selected) {
+		this.selected = selected;
+	}
+	public void changeColor(Color color) {
+		for(DShape shape: collection)
+		{
+			if (getSelected().equals(shape))
+			{
+				shape.setColor(color);
+			}
 		}
 		repaint();
 	}
