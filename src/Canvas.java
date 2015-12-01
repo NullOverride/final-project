@@ -1,6 +1,7 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -19,6 +20,15 @@ public class Canvas extends JPanel {
 		super.paintComponent(g);
 		for(DShape shape : collection) {
 			shape.draw(g);
+			if(shape.equals(selected))
+			{
+				int knobWH = 18;
+				for(Point p : shape.getKnobs())
+				{
+					g.setColor(Color.black);
+					g.fillRect(((int)p.getX())-9, ((int)p.getY())-9, knobWH, knobWH);
+				}
+			}
 		}
 	}
 	

@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 
 public class DShape {
@@ -54,6 +56,15 @@ public class DShape {
 	
 	public int getHeight() {
 		return (int) dSM.getHeight();
+	}
+	
+	public ArrayList<Point> getKnobs() {
+		ArrayList<Point> points = new ArrayList<Point>();
+		points.add(new Point(getX()+1,getY()+1)); //Top Left
+		points.add(new Point(getX()+1,getY()+getHeight()-1)); //Bottom Left
+		points.add(new Point(getX()+getWidth()-1,getY()+1)); //Top Right
+		points.add(new Point(getX()+getWidth()-1,getY()+getHeight()-1)); //Bottom Right
+		return points;
 	}
 
 }

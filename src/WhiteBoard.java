@@ -101,6 +101,7 @@ public class WhiteBoard extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				can.setSelected(e.getX(), e.getY());
+				repaint();
 			}
 
 		});
