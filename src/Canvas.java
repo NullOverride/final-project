@@ -45,6 +45,17 @@ public class Canvas extends JPanel {
 			collection.add(oval);
 			setSelected(oval);
 		}
+		else if(shape instanceof DLineModel)
+        {
+            DLine line = new DLine();
+            line.setColor(shape.getColor());
+            line.setX(shape.getX());
+            line.setY(shape.getY());
+            line.setWidth(shape.getWidth());
+            line.setHeight(shape.getHeight());
+            collection.add(line);
+            setSelected(line);
+        }
 		
 		repaint();
 	}
