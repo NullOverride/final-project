@@ -57,7 +57,7 @@ public class WhiteBoard extends JFrame {
 		setTitle("White Board Turbo 2000");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 800, 400);
+		setBounds(100, 100, 850, 400);
 		
 		// MENU BAR
 		
@@ -100,6 +100,7 @@ public class WhiteBoard extends JFrame {
 		can.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
 				can.setSelected(e.getX(), e.getY());
 				repaint();
 			}
@@ -185,6 +186,17 @@ public class WhiteBoard extends JFrame {
 		JButton btnText = new JButton("Text");
 		btnText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Yay for random shapes
+				int random = (int) (Math.random() * 200);
+				int random2 = (int) (Math.random() * 200);
+				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
+						Color.green, Color.magenta, Color.orange, Color.YELLOW,
+						Color.pink, Color.LIGHT_GRAY};
+				Color randomColor = colors[(int) (Math.random() * colors.length)];
+				// End randomness
+				DTextModel textModel = new DTextModel(random, random2, 75, 50, randomColor);
+				can.addShape(textModel);
+				dTable.addRow(textModel);
 			}
 		});
 		

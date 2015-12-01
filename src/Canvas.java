@@ -66,6 +66,17 @@ public class Canvas extends JPanel {
             collection.add(line);
             setSelected(line);
         }
+		else if(shape instanceof DTextModel)
+        {
+            DText text = new DText();
+            text.setColor(shape.getColor());
+            text.setX(shape.getX());
+            text.setY(shape.getY());
+            text.setWidth(shape.getWidth());
+            text.setHeight(shape.getHeight());
+            collection.add(text);
+            setSelected(text);
+        }
 		
 		repaint();
 	}
