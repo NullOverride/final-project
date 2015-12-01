@@ -55,5 +55,8 @@ public class DShape {
 	public int getHeight() {
 		return (int) dSM.getHeight();
 	}
+	public DShapeModel getShapeModel() {
+		return dSM;
+	}
 
 }

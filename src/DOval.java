@@ -5,8 +5,8 @@ import java.awt.Graphics;
 public class DOval extends DShape {
 	
 	DOvalModel dOModel;
-	public DOval()
-	{
+	
+	public DOval() {
 		dOModel = new DOvalModel(0, 0, 0, 0, Color.GRAY);
 	}
 	

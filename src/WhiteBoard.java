@@ -1,4 +1,5 @@
 import java.awt.EventQueue;
+import java.awt.Graphics;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,17 +13,30 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JTextField;
 import javax.swing.JTable;
 
 import java.awt.Color;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
@@ -59,6 +73,11 @@ public class WhiteBoard extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 400);
 		
+		// DRAWING CANVAS
+		
+		final Canvas can = new Canvas();
+		can.setBackground(Color.WHITE);
+		
 		// MENU BAR
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -69,32 +88,194 @@ public class WhiteBoard extends JFrame {
 		
 		JMenuItem mntmNew = new JMenuItem("New..");
 		mnFile.add(mntmNew);
-		
+		mntmNew.addActionListener(new ActionListener() {	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				can.reset();
+				dTable.reset();
+				repaint();
+			}
+		});
 		JMenuItem mntmOpen = new JMenuItem("Open..");
 		mnFile.add(mntmOpen);
+		mntmOpen.addActionListener(new ActionListener() {	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String result = JOptionPane.showInputDialog("Enter File Name", null) + ".xml";
+				if(result != null)
+				{
+					try {
+						XMLDecoder xmlIn = new XMLDecoder(
+								new BufferedInputStream(
+										new FileInputStream(
+												new File(result))));
+						DShape[] array = (DShape[]) xmlIn.readObject();
+						xmlIn.close();
+						// TODO :ADD CLEAR - clear()
+						for(DShape d: array) {
+			                can.addShape(d);
+			            }
+					} catch (IOException o) {
+						o.printStackTrace();
+					}
+				}
+			}
+		});
 		
 		JMenuItem mntmSave = new JMenuItem("Save As XML...");
 		mnFile.add(mntmSave);
 		
+		mntmSave.addActionListener(new ActionListener() {	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String result = JOptionPane.showInputDialog("Enter File Name", null) + ".xml";
+				if(result != null)
+				{
+					try {
+						XMLEncoder xmlOut = new XMLEncoder(
+								new BufferedOutputStream(
+										new FileOutputStream(
+												new File(result))));
+						DShape[] array = can.getCollection().toArray(new DShape[0]);
+						
+						xmlOut.writeObject(array);
+						xmlOut.close();
+					} catch (IOException o) {
+						o.printStackTrace();
+					}
+				}
+			}
+		});
+		
 		JMenuItem mntmSaveAsPng = new JMenuItem("Save as PNG...");
 		mnFile.add(mntmSaveAsPng);
+		mntmSaveAsPng.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String result = JOptionPane.showInputDialog("Enter File Name", null) + ".png";
+				if(result != null)
+				{
+					try {
+						BufferedImage image = (BufferedImage) can.createImage(can.getWidth(), can.getHeight());
+						Graphics g = image.getGraphics();
+				        can.paintAll(g);
+				        g.dispose();
+				        javax.imageio.ImageIO.write(image, "PNG", new File(result));
+					} catch (IOException o) {
+						o.printStackTrace();
+					}
+				}
+			}
+		});
 		
 		JMenu mnConnection = new JMenu("Connection");
 		menuBar.add(mnConnection);
 		
 		JMenuItem mntmStartServer = new JMenuItem("Start Server");
 		mnConnection.add(mntmStartServer);
-		
+		mntmStartServer.addActionListener(new ActionListener() {
+			class Server extends Thread{
+				
+				private int port;
+
+				public Server(int port) {
+					this.port = port;
+				}
+				
+				public void run() {
+			        try {
+			            ServerSocket serverSocket = new ServerSocket(port);
+			            while (true) {
+			                Socket toClient = null;
+			                toClient = serverSocket.accept();
+			                //addOutput(new ObjectOutputStream(toClient.getOutputStream()));
+			            }
+			        } catch (IOException ex) {
+			            ex.printStackTrace(); 
+			        }
+			    }
+			}
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String result = JOptionPane.showInputDialog("Enter Port Number (100 - 25565)", 0);
+				while (Integer.parseInt(result) < 100 || Integer.parseInt(result) > 25565)
+				{
+					result = JOptionPane.showInputDialog("Enter a Valid Port Number from 100 to 25565", 0);
+				}
+				if (result != null) {
+		            System.out.println("server: start");
+		            Server serverAccepter = new Server(Integer.parseInt(result.trim()));
+		            serverAccepter.start();
+		        }
+			}
+		});
 		JMenuItem mntmJoinServer = new JMenuItem("Join Server");
 		mnConnection.add(mntmJoinServer);
+		mntmStartServer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				class Client extends Thread {
+					private String name;
+					private int port;
+					
+					public Client(String name, int port) {
+						this.name = name;
+						this.port = port;
+					}
+					
+					public void run() {
+				        try {
+				            Socket toServer = new Socket(name, port);
+				            ObjectInputStream in = new ObjectInputStream(toServer.getInputStream());
+				            while (true) {
+				            	String verb = (String) in.readObject();
+				                String xmlString = (String) in.readObject();
+				                XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(xmlString.getBytes()));
+				                DShapeModel shape = (DShapeModel) decoder.readObject();
+				                decoder.close();
+				                switch(verb)
+				                {
+				                	case "add":
+				                		can.addShape(shape);
+				                		break;
+				                	case "remove":
+				                		//TODO Remove
+				                		break;
+				                	case "front":
+				                		can.moveSelectedToFront();
+				                		break;
+				                	case "back":
+				                		can.moveSelectedToBack();
+				                		break;
+				                	case "change":
+				                		//TODO
+				                		break;
+				                }
+
+				            }
+				        }
+				        catch (Exception ex) { // IOException and ClassNotFoundException
+				        	ex.printStackTrace();
+				        }				   
+					}
+				}
+				String result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
+				while (result == null)
+				{
+					result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
+				}
+				if (result != null) {
+					String[] parts = result.split(":");
+					Client clientHandler = new Client(parts[0].trim(), Integer.parseInt(parts[1].trim()));
+					clientHandler.start();
+				}
+			}
+		});
+		
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
-		// DRAWING CANVAS
-		
-		final Canvas can = new Canvas();
-		can.setBackground(Color.WHITE);
 		
 		//Select a shape
 		can.addMouseListener(new MouseAdapter() {
@@ -112,10 +293,10 @@ public class WhiteBoard extends JFrame {
 				DShape sp = can.getSelected();
 				if(sp != null)
 				{
-					int dx = e.getX() - can.getSelected().getX();
-					int dy = e.getY() - can.getSelected().getY();
-					can.getSelected().setX(can.getSelected().getX() + dx);
-					can.getSelected().setY(can.getSelected().getY() + dy);
+					int dx = e.getX() - sp.getX();
+					int dy = e.getY() - sp.getY();
+					sp.setX(sp.getX() + dx);
+					sp.setY(sp.getY() + dy);
 					repaint();
 				}
 			}
@@ -206,18 +387,34 @@ public class WhiteBoard extends JFrame {
 		JButton btnMoveToFront = new JButton("Move To Front");
 		btnMoveToFront.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (can.getSelected() != null)
+				{
+					can.moveSelectedToFront();
+					dTable.moveRowUp(can.getSelected().getShapeModel());
+				}
 			}
 		});
 		
 		JButton btnMoveToBack = new JButton("Move To Back");
 		btnMoveToBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (can.getSelected() != null)
+				{
+					can.moveSelectedToBack();
+					dTable.moveRowDown(can.getSelected().getShapeModel());
+				}
 			}
 		});
 		
 		JButton btnRemoveShape = new JButton("Remove Shape");
 		btnRemoveShape.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (can.getSelected() != null)
+				{
+					dTable.removeRow(can.getSelected().getShapeModel());
+					can.removeSelected();
+					repaint();
+				}
 			}
 		});
 		

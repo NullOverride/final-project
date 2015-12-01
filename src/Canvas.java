@@ -15,11 +15,21 @@ public class Canvas extends JPanel {
 		setSelected(null);
 	}
 
+	public ArrayList<DShape> getCollection() 
+	{
+		return collection;
+	}
+	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		for(DShape shape : collection) {
 			shape.draw(g);
 		}
+	}
+	
+	public void addShape(DShape shape) {
+		collection.add(shape);
+		repaint();
 	}
 	
 	public void addShape(DShapeModel shape) {
@@ -89,5 +99,45 @@ public class Canvas extends JPanel {
 		repaint();
 	}
 
-
+	public void moveSelectedToFront() {
+		for (int i = 0; i < collection.size() - 1; i++)
+		{
+			if(collection.get(i).equals(selected))
+			{
+				DShape temp = collection.get(i);
+				collection.set(i, collection.get(i + 1));
+				collection.set(i + 1, temp);
+				break;
+			}
+		}
+		repaint();
+	}
+	public void moveSelectedToBack() {
+		for (int i = 1; i < collection.size(); i++)
+		{
+			if(collection.get(i).equals(selected))
+			{
+				DShape temp = collection.get(i);
+				collection.set(i, collection.get(i - 1));
+				collection.set(i - 1, temp);
+				break;
+			}
+		}
+		repaint();
+	}
+	
+	public void removeSelected() {
+		for(int i = 0; i < collection.size(); i++)
+		{
+			if (collection.get(i).equals(getSelected()))
+			{
+				collection.remove(i);
+			}
+		}
+	}
+	
+	public void reset() {
+		collection = new ArrayList<DShape>();
+		setSelected(null);
+	}
 }

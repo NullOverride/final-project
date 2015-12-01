@@ -14,4 +14,5 @@ public class DLine extends DShape {
 		g.setColor(getColor());
 		g.drawLine(getX(), getY(), getWidth(), getHeight());
 	}
+
 }
