@@ -1,6 +1,7 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -24,6 +25,15 @@ public class Canvas extends JPanel {
 		super.paintComponent(g);
 		for(DShape shape : collection) {
 			shape.draw(g);
+			if(shape.equals(selected))
+			{
+				int knobWH = 18;
+				for(Point p : shape.getKnobs())
+				{
+					g.setColor(Color.black);
+					g.fillRect(((int)p.getX())-9, ((int)p.getY())-9, knobWH, knobWH);
+				}
+			}
 		}
 	}
 	
@@ -65,6 +75,17 @@ public class Canvas extends JPanel {
             line.setHeight(shape.getHeight());
             collection.add(line);
             setSelected(line);
+        }
+		else if(shape instanceof DTextModel)
+        {
+            DText text = new DText();
+            text.setColor(shape.getColor());
+            text.setX(shape.getX());
+            text.setY(shape.getY());
+            text.setWidth(shape.getWidth());
+            text.setHeight(shape.getHeight());
+            collection.add(text);
+            setSelected(text);
         }
 		
 		repaint();
