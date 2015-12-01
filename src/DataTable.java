@@ -5,7 +5,7 @@ import javax.swing.table.AbstractTableModel;
 
 public class DataTable extends AbstractTableModel {
 
-	public String[] columnNames = {"X", "Y", "Width", "Height"};
+	public String[] colNames = { "X", "Y", "Width", "Height" };
 	
 	public ArrayList<DShapeModel> data;
 	
@@ -15,7 +15,7 @@ public class DataTable extends AbstractTableModel {
 	
 	@Override
 	public int getColumnCount() {
-		return columnNames.length;
+		return colNames.length;
 	}
 
 	@Override
@@ -57,10 +57,9 @@ public class DataTable extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 	
-	@Override
 	public String getColumnName(int col)
 	{
-		return columnNames[col];
+		return colNames[col];
 	}
 	
 }

@@ -25,7 +25,6 @@ import javax.swing.JTable;
 import java.awt.Color;
 
 import javax.swing.JComboBox;
-import javax.swing.JScrollPane;
 
 
 public class WhiteBoard extends JFrame {
@@ -95,29 +94,10 @@ public class WhiteBoard extends JFrame {
 		
 		final Canvas can = new Canvas();
 		can.setBackground(Color.WHITE);
-		
-		//Select a shape
 		can.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				can.setSelected(e.getX(), e.getY());
-			}
-
-		});
-		
-		//Drag a shape
-		can.addMouseMotionListener(new MouseAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				DShape sp = can.getSelected();
-				if(sp != null)
-				{
-					int dx = e.getX() - can.getSelected().getX();
-					int dy = e.getY() - can.getSelected().getY();
-					can.getSelected().setX(can.getSelected().getX() + dx);
-					can.getSelected().setY(can.getSelected().getY() + dy);
-					repaint();
-				}
 			}
 		});
 		// BUTTONS
@@ -156,28 +136,13 @@ public class WhiteBoard extends JFrame {
 						Color.pink, Color.LIGHT_GRAY};
 				Color randomColor = colors[(int) (Math.random() * colors.length)];
 				// End randomness
-				DOvalModel ovalModel = new DOvalModel(random, random2, random3, random4, randomColor);
-				can.addShape(ovalModel);
-				dTable.addRow(ovalModel);
+				can.addShape(new DOvalModel(random, random2, random3, random4, randomColor));	
 			}
 		});
 		
 		JButton btnLine = new JButton("Line");
 		btnLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Yay for random shapes
-				int random = (int) (Math.random() * 200);
-				int random2 = (int) (Math.random() * 200);
-				int random3 = (int) (Math.random() * 200);
-				int random4 = (int) (Math.random() * 200);
-				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
-						Color.green, Color.magenta, Color.orange, Color.YELLOW,
-						Color.pink, Color.LIGHT_GRAY};
-				Color randomColor = colors[(int) (Math.random() * colors.length)];
-				// End randomness
-				DLineModel lineModel = new DLineModel(random, random2, random3, random4, randomColor);
-				can.addShape(lineModel);
-				dTable.addRow(lineModel);
 			}
 		});
 		
@@ -223,9 +188,8 @@ public class WhiteBoard extends JFrame {
 		
 		// TABLE
 		dTable = new DataTable();
-		JScrollPane scrollPane = new JScrollPane();
 		table = new JTable(dTable);
-		scrollPane.setViewportView(table);
+		
 		
 		// Group buttons together with gaps and all the positioning stuff......
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -250,11 +214,11 @@ public class WhiteBoard extends JFrame {
 							.addComponent(btnMoveToBack)
 							.addGap(18)
 							.addComponent(btnRemoveShape))
+						.addComponent(table, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))
+							.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(can, GroupLayout.PREFERRED_SIZE, 387, GroupLayout.PREFERRED_SIZE))
 		);
@@ -280,11 +244,9 @@ public class WhiteBoard extends JFrame {
 						.addComponent(btnRemoveShape)
 						.addComponent(btnMoveToFront)
 						.addComponent(btnMoveToBack))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(table, GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE))
 		);
-		
-
 		contentPane.setLayout(gl_contentPane);
 	}
 }
