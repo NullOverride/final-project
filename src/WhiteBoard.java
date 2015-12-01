@@ -15,6 +15,9 @@ import javax.swing.JMenuItem;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JTextField;
 import javax.swing.JTable;
@@ -29,7 +32,7 @@ public class WhiteBoard extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTable table;
-
+	private DataTable dTable;
 	/**
 	 * Launch the application.
 	 */
@@ -91,7 +94,12 @@ public class WhiteBoard extends JFrame {
 		
 		final Canvas can = new Canvas();
 		can.setBackground(Color.WHITE);
-		
+		can.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				can.setSelected(e.getX(), e.getY());
+			}
+		});
 		// BUTTONS
 		
 		JLabel lblAdd = new JLabel("ADD");
@@ -109,7 +117,9 @@ public class WhiteBoard extends JFrame {
 						Color.pink, Color.LIGHT_GRAY};
 				Color randomColor = colors[(int) (Math.random() * colors.length)];
 				// End randomness
-				can.addShape(new DRectModel(random, random2, random3, random4, randomColor));			
+				DRectModel rectModel = new DRectModel(random, random2, random3, random4, randomColor);
+				can.addShape(rectModel);
+				dTable.addRow(rectModel);
 			}
 		});
 		
@@ -177,8 +187,8 @@ public class WhiteBoard extends JFrame {
 		});
 		
 		// TABLE
-		
-		table = new JTable();
+		dTable = new DataTable();
+		table = new JTable(dTable);
 		
 		
 		// Group buttons together with gaps and all the positioning stuff......

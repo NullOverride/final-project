@@ -52,9 +52,20 @@ public class Canvas extends JPanel {
 	public DShape getSelected() {
 		return selected;
 	}
+	
+	public void setSelected(DShape shape)
+	{
+		this.selected = shape;
+	}
 
-	public void setSelected(DShape selected) {
-		this.selected = selected;
+	public void setSelected(int x, int y) {
+		for(DShape shape: collection)
+		{
+			if (x >= shape.getX() && x <= shape.getX() + shape.getWidth() && y >= shape.getY() && y <= shape.getY() + shape.getHeight())
+			{
+				this.selected = shape;
+			}
+		}	
 	}
 	public void changeColor(Color color) {
 		for(DShape shape: collection)
