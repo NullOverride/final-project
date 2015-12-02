@@ -25,10 +25,19 @@ public class Canvas extends JPanel {
 		super.paintComponent(g);
 		for(DShape shape : collection) {
 			shape.draw(g);
-			if(shape.equals(selected))
+			if(shape.equals(selected) && !(shape instanceof DLine))
 			{
 				int knobWH = 18;
 				for(Point p : shape.getKnobs())
+				{
+					g.setColor(Color.black);
+					g.fillRect(((int)p.getX())-9, ((int)p.getY())-9, knobWH, knobWH);
+				}
+			}
+			else if(shape.equals(selected) && (shape instanceof DLine))
+			{
+				int knobWH = 18;
+				for(Point p : shape.getLineKnobs())
 				{
 					g.setColor(Color.black);
 					g.fillRect(((int)p.getX())-9, ((int)p.getY())-9, knobWH, knobWH);

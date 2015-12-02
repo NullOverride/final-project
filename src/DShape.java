@@ -69,5 +69,12 @@ public class DShape {
 		points.add(new Point(getX()+getWidth()-1,getY()+getHeight()-1)); //Bottom Right
 		return points;
 	}
+	public ArrayList<Point> getLineKnobs(){
+		ArrayList<Point> points = new ArrayList<Point>();
+		points.add(new Point(getX()+1, getY()+1));
+		points.add(new Point(getWidth()+1, getHeight()+1));
+		
+		return points;
+	}
 
 }

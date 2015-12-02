@@ -303,14 +303,15 @@ public class WhiteBoard extends JFrame {
 				int y = e.getY();
 				
 				DShape sp = can.getSelected();
-				if(sp != null)
+				if(sp.getBounds().contains(pt))
 				{
 					dx = x - pt.x;
 					dy = y - pt.y;
 					sp.setX(sp.getX() + dx);
 					sp.setY(sp.getY() + dy);
+					pt = e.getPoint();
+					repaint();
 				}
-				pt = e.getPoint();
 				repaint();
 			}
 		});
