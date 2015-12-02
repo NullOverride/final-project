@@ -347,6 +347,10 @@ public class WhiteBoard extends JFrame {
 				Color randomColor = colors[(int) (Math.random() * colors.length)];
 				// End randomness
 				DTextModel textModel = new DTextModel(random, random2, 75, 50, randomColor);
+				
+				String text = textField.getText();
+				can.setText(text);
+				
 				can.addShape(textModel);
 				dTable.addRow(textModel);
 			}

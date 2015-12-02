@@ -11,6 +11,7 @@ public class Canvas extends JPanel {
 	private ArrayList<DShape> collection;
 	private DShape selected;
 	private final int KNOB_SIZE = 9;
+	private String text;
 
 	public Canvas(){
 		collection = new ArrayList<DShape>();
@@ -88,14 +89,16 @@ public class Canvas extends JPanel {
         }
 		else if(shape instanceof DTextModel)
         {
-            DText text = new DText();
-            text.setColor(shape.getColor());
-            text.setX(shape.getX());
-            text.setY(shape.getY());
-            text.setWidth(shape.getWidth());
-            text.setHeight(shape.getHeight());
-            collection.add(text);
-            setSelected(text);
+            DText textShape = new DText();
+            textShape.setColor(shape.getColor());
+            textShape.setX(shape.getX());
+            textShape.setY(shape.getY());
+            textShape.setWidth(shape.getWidth());
+            textShape.setHeight(shape.getHeight());
+            
+            textShape.setInput(text);
+            collection.add(textShape);
+            setSelected(textShape);
         }
 		
 		repaint();
@@ -170,5 +173,14 @@ public class Canvas extends JPanel {
 	public void reset() {
 		collection = new ArrayList<DShape>();
 		setSelected(null);
+	}
+	public void setNewLocation(int x, int y)
+	{
+		selected.getShapeModel().setX(x);
+		selected.getShapeModel().setY(y);
+	}
+	public void setText(String t)
+	{
+		text = t;
 	}
 }
