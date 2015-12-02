@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
@@ -45,6 +47,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.SwingConstants;
+
 import java.awt.FlowLayout;
 
 
@@ -59,6 +62,8 @@ public class WhiteBoard extends JFrame {
 	private Server serverAccepter;
 	private Client clientHandler;
 	private ArrayList<ObjectOutputStream> outputs;
+	private JComboBox comboBox;
+	private String[] fonts;
 	/**
 	 * Launch the application.
 	 */
@@ -102,7 +107,7 @@ public class WhiteBoard extends JFrame {
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
-		JMenuItem mntmNew = new JMenuItem("New..");
+		final JMenuItem mntmNew = new JMenuItem("New..");
 		mnFile.add(mntmNew);
 		mntmNew.addActionListener(new ActionListener() {	
 			@Override
@@ -112,7 +117,7 @@ public class WhiteBoard extends JFrame {
 				repaint();
 			}
 		});
-		JMenuItem mntmOpen = new JMenuItem("Open XML..");
+		final JMenuItem mntmOpen = new JMenuItem("Open XML..");
 		mnFile.add(mntmOpen);
 		mntmOpen.addActionListener(new ActionListener() {	
 			@Override
@@ -138,7 +143,7 @@ public class WhiteBoard extends JFrame {
 			}
 		});
 		
-		JMenuItem mntmSave = new JMenuItem("Save As XML...");
+		final JMenuItem mntmSave = new JMenuItem("Save As XML...");
 		mnFile.add(mntmSave);
 		
 		mntmSave.addActionListener(new ActionListener() {	
@@ -163,7 +168,7 @@ public class WhiteBoard extends JFrame {
 			}
 		});
 		
-		JMenuItem mntmSaveAsPng = new JMenuItem("Save as PNG...");
+		final JMenuItem mntmSaveAsPng = new JMenuItem("Save as PNG...");
 		mnFile.add(mntmSaveAsPng);
 		mntmSaveAsPng.addActionListener(new ActionListener() {
 			@Override
@@ -195,7 +200,7 @@ public class WhiteBoard extends JFrame {
 		
 		//////////////////////////////////
 		//CANVAS MOUSE LISTENERS
-		MouseAdapter mouseAdapter = new MouseAdapter() {
+		final MouseAdapter mouseAdapter = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				pt = e.getPoint();
@@ -212,7 +217,7 @@ public class WhiteBoard extends JFrame {
 		};
 
 		//Drag a shape
-		MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
+		final MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
 			private int dx;
 			private int dy;
 			
@@ -282,10 +287,10 @@ public class WhiteBoard extends JFrame {
 		
 		//////////////////////////////////
 		// SHAPE BUTTONS
-		JLabel lblAdd = new JLabel("ADD");
+		final JLabel lblAdd = new JLabel("ADD");
 		lblAdd.setHorizontalAlignment(SwingConstants.LEFT);
 		
-		JButton btnRectangle = new JButton("Rect");
+		final JButton btnRectangle = new JButton("Rect");
 		btnRectangle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Creation code
@@ -301,7 +306,7 @@ public class WhiteBoard extends JFrame {
 			}
 		});
 		
-		JButton btnNewButton = new JButton("Oval");
+		final JButton btnNewButton = new JButton("Oval");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Creation code
@@ -317,7 +322,7 @@ public class WhiteBoard extends JFrame {
 			}
 		});
 		
-		JButton btnLine = new JButton("Line");
+		final JButton btnLine = new JButton("Line");
 		btnLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Creation code
@@ -333,7 +338,12 @@ public class WhiteBoard extends JFrame {
 			}
 		});
 		
-		JButton btnText = new JButton("Text");
+		// FONT SELECTOR
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		fonts = ge.getAvailableFontFamilyNames();
+		comboBox = new JComboBox(fonts);
+		
+		final JButton btnText = new JButton("Text");
 		btnText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Creation code
@@ -343,6 +353,8 @@ public class WhiteBoard extends JFrame {
 				DText dT = new DText();
 				dT.setAll(textModel.getX(), textModel.getY(), textModel.getWidth(), textModel.getHeight(), textModel.getColor(), textModel.getID());
 				dT.setInput(text);
+				String font = (String) comboBox.getSelectedItem();
+				dT.setFont(font);
 				can.addShape(dT);
 				dTable.addRow(textModel);
 				if (serverAccepter != null && outputs.size() > 0)
@@ -355,7 +367,7 @@ public class WhiteBoard extends JFrame {
 		
 		//////////////////////////////////
 		//TEXT / COLOR / ARRANGEMENT
-		JButton btnSetColor = new JButton("Set Color");
+		final JButton btnSetColor = new JButton("Set Color");
 		btnSetColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(can.getSelected() != null)
@@ -373,10 +385,8 @@ public class WhiteBoard extends JFrame {
 		textField = new JTextField("Hello");
 		textField.setColumns(10);
 		
-		// FONT SELECTOR
-		JComboBox comboBox = new JComboBox();
 		
-		JButton btnMoveToFront = new JButton("Move To Front");
+		final JButton btnMoveToFront = new JButton("Move To Front");
 		btnMoveToFront.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (can.getSelected() != null)
@@ -391,7 +401,7 @@ public class WhiteBoard extends JFrame {
 			}
 		});
 		
-		JButton btnMoveToBack = new JButton("Move To Back");
+		final JButton btnMoveToBack = new JButton("Move To Back");
 		btnMoveToBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (can.getSelected() != null)
@@ -406,7 +416,7 @@ public class WhiteBoard extends JFrame {
 			}
 		});
 		
-		JButton btnRemoveShape = new JButton("Remove Shape");
+		final JButton btnRemoveShape = new JButton("Remove Shape");
 		btnRemoveShape.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (can.getSelected() != null)
@@ -427,19 +437,19 @@ public class WhiteBoard extends JFrame {
 		//CONNECTION AND SERVER 
 		
 		// Labels (Client Mode/Server Mode
-		JLabel lblClientMode = new JLabel("CLIENT MODE");
+		final JLabel lblClientMode = new JLabel("CLIENT MODE");
 		lblClientMode.setForeground(Color.RED);
 		lblClientMode.setVisible(false);
 
-		JLabel lblServerMode = new JLabel("SERVER MODE");
+		final JLabel lblServerMode = new JLabel("SERVER MODE");
 		lblServerMode.setHorizontalAlignment(SwingConstants.LEFT);
 		lblServerMode.setForeground(Color.RED);
 		lblServerMode.setVisible(false);
 		
-		JMenu mnConnection = new JMenu("Connection");
+		final JMenu mnConnection = new JMenu("Connection");
 		menuBar.add(mnConnection);
 		
-		JMenuItem mntmStartServer = new JMenuItem("Start Server");
+		final JMenuItem mntmStartServer = new JMenuItem("Start Server");
 		mnConnection.add(mntmStartServer);
 		mntmStartServer.addActionListener(new ActionListener() {
 			@Override
@@ -449,7 +459,7 @@ public class WhiteBoard extends JFrame {
 				lblServerMode.setVisible(true);
 			}
 		});
-		JMenuItem mntmJoinServer = new JMenuItem("Join Server");
+		final JMenuItem mntmJoinServer = new JMenuItem("Join Server");
 		mnConnection.add(mntmJoinServer);
 		mntmJoinServer.addActionListener(new ActionListener() {
 			@Override
