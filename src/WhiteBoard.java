@@ -203,9 +203,15 @@ public class WhiteBoard extends JFrame {
 			public void mousePressed(MouseEvent e) {
 				pt = e.getPoint();
 				can.setSelected(e.getX(), e.getY());
+			}
+			public void mouseClicked(MouseEvent e) {
+				pt = e.getPoint();
 				repaint();
 			}
-
+			public void mouseReleased(MouseEvent e) {
+				can.setSelected(e.getX(), e.getY());
+				dTable.updateRow(can.getSelected());
+			}
 		});
 		
 		//Drag a shape

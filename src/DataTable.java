@@ -88,21 +88,21 @@ public class DataTable extends AbstractTableModel {
 		}
 	}
 	
-//	public void updateRow(DShapeModel shape)
-//	{
-//		for(int i = 0; i < data.size() - 1; i++)
-//		{
-//			DShapeModel d = data.get(i);
-//			if(shape.getWidth() == d.getWidth() && shape.getHeight() == d.getHeight() && shape.getX() == d.getX() && shape.getY() == d.getY())
-//			{
-//				data.set(i, data.get(i + 1));
-//				data.set(i + 1, d);
-//				fireTableRowsUpdated(i, i + 1);
-//				break;
-//			}
-//		}
-//	}
-//	
+	public void updateRow(DShape shape)
+	{
+		for(int i = 0; i < data.size(); i++)
+		{
+			DShapeModel d = data.get(i);
+			if(shape.getWidth() == d.getWidth() && shape.getHeight() == d.getHeight())
+			{
+				data.set(i, shape.getShapeModel());
+				
+				fireTableRowsUpdated(i,i);
+				break;
+			}
+		}
+	}
+	
 	public String getColumnName(int col)
 	{
 		return colNames[col];
@@ -111,5 +111,5 @@ public class DataTable extends AbstractTableModel {
 	public void reset() {
 		data = new ArrayList<>();
 	}
-	
+
 }
