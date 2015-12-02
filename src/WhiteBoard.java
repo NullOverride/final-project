@@ -1,5 +1,6 @@
 import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.awt.Point;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,6 +20,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JTextField;
@@ -48,6 +51,7 @@ public class WhiteBoard extends JFrame {
 	private JTextField textField;
 	private JTable table;
 	private DataTable dTable;
+	private Point pt;
 	/**
 	 * Launch the application.
 	 */
@@ -280,8 +284,8 @@ public class WhiteBoard extends JFrame {
 		//Select a shape
 		can.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				
+			public void mousePressed(MouseEvent e) {
+				pt = e.getPoint();
 				can.setSelected(e.getX(), e.getY());
 				repaint();
 			}
@@ -289,18 +293,25 @@ public class WhiteBoard extends JFrame {
 		});
 		
 		//Drag a shape
-		can.addMouseMotionListener(new MouseAdapter() {
+		can.addMouseMotionListener(new MouseMotionAdapter() {
+			private int dx;
+			private int dy;
+			
 			@Override
 			public void mouseDragged(MouseEvent e) {
+				int x = e.getX();
+				int y = e.getY();
+				
 				DShape sp = can.getSelected();
 				if(sp != null)
 				{
-					int dx = e.getX() - sp.getX();
-					int dy = e.getY() - sp.getY();
+					dx = x - pt.x;
+					dy = y - pt.y;
 					sp.setX(sp.getX() + dx);
 					sp.setY(sp.getY() + dy);
-					repaint();
 				}
+				pt = e.getPoint();
+				repaint();
 			}
 		});
 		// BUTTONS
