@@ -102,7 +102,7 @@ public class WhiteBoard extends JFrame {
 				repaint();
 			}
 		});
-		JMenuItem mntmOpen = new JMenuItem("Open..");
+		JMenuItem mntmOpen = new JMenuItem("Open XML..");
 		mnFile.add(mntmOpen);
 		mntmOpen.addActionListener(new ActionListener() {	
 			@Override
@@ -271,17 +271,8 @@ public class WhiteBoard extends JFrame {
 		JButton btnRectangle = new JButton("Rect");
 		btnRectangle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Yay for random shapes
-				int random = (int) (Math.random() * 400);
-				int random2 = (int) (Math.random() * 400);
-				int random3 = (int) (Math.random() * 200);
-				int random4 = (int) (Math.random() * 200);
-				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
-						Color.green, Color.magenta, Color.orange, Color.YELLOW,
-						Color.pink, Color.LIGHT_GRAY};
-				Color randomColor = colors[(int) (Math.random() * colors.length)];
-				// End randomness
-				DRectModel rectModel = new DRectModel(random, random2, random3, random4, randomColor);
+				// Creation code
+				DRectModel rectModel = new DRectModel(25, 25, 50, 50, Color.LIGHT_GRAY);
 				can.addShape(rectModel);
 				dTable.addRow(rectModel);
 				if (serverAccepter != null && outputs.size() != 0)
@@ -300,17 +291,8 @@ public class WhiteBoard extends JFrame {
 		JButton btnNewButton = new JButton("Oval");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				// Yay for random shapes
-				int random = (int) (Math.random() * 400);
-				int random2 = (int) (Math.random() * 400);
-				int random3 = (int) (Math.random() * 200);
-				int random4 = (int) (Math.random() * 200);
-				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
-						Color.green, Color.magenta, Color.orange, Color.YELLOW,
-						Color.pink, Color.LIGHT_GRAY};
-				Color randomColor = colors[(int) (Math.random() * colors.length)];
-				// End randomness
-				DOvalModel ovalModel = new DOvalModel(random, random2, random3, random4, randomColor);
+				// Creation code
+				DOvalModel ovalModel = new DOvalModel(25, 25, 50, 50, Color.LIGHT_GRAY);
 				can.addShape(ovalModel);
 				dTable.addRow(ovalModel);
 			}
@@ -319,17 +301,8 @@ public class WhiteBoard extends JFrame {
 		JButton btnLine = new JButton("Line");
 		btnLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Yay for random shapes
-				int random = (int) (Math.random() * 200);
-				int random2 = (int) (Math.random() * 200);
-				int random3 = (int) (Math.random() * 200);
-				int random4 = (int) (Math.random() * 200);
-				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
-						Color.green, Color.magenta, Color.orange, Color.YELLOW,
-						Color.pink, Color.LIGHT_GRAY};
-				Color randomColor = colors[(int) (Math.random() * colors.length)];
-				// End randomness
-				DLineModel lineModel = new DLineModel(random, random2, random3, random4, randomColor);
+				//Creation code
+				DLineModel lineModel = new DLineModel(25, 25, 50, 50, Color.LIGHT_GRAY);
 				can.addShape(lineModel);
 				dTable.addRow(lineModel);
 			}
@@ -338,15 +311,8 @@ public class WhiteBoard extends JFrame {
 		JButton btnText = new JButton("Text");
 		btnText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Yay for random shapes
-				int random = (int) (Math.random() * 200);
-				int random2 = (int) (Math.random() * 200);
-				Color colors[] = {Color.black, Color.red, Color.blue, Color.cyan,
-						Color.green, Color.magenta, Color.orange, Color.YELLOW,
-						Color.pink, Color.LIGHT_GRAY};
-				Color randomColor = colors[(int) (Math.random() * colors.length)];
-				// End randomness
-				DTextModel textModel = new DTextModel(random, random2, 75, 50, randomColor);
+				// Creation code
+				DTextModel textModel = new DTextModel(25, 25, 75, 50, Color.LIGHT_GRAY);
 				
 				String text = textField.getText();
 				can.setText(text);
