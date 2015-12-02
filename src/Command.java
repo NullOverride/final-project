@@ -2,7 +2,7 @@
 public class Command {
 
 	public String command;
-    public DShapeModel shape;
+    public DShape shape;
 
     public Command() {
         command = null;
@@ -16,10 +16,10 @@ public class Command {
         this.command = command;
     }
 
-    public DShapeModel getShape() { 
+    public DShape getShape() { 
         return shape;
     }
-    public void setShape(DShapeModel shape) {
+    public void setShape(DShape shape) {
         this.shape = shape;
     }
 

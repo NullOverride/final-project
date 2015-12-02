@@ -1,48 +1,48 @@
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Point;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JColorChooser;
-import javax.swing.JLabel;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JButton;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-
-import javax.swing.JTextField;
-import javax.swing.JTable;
-
-import java.awt.Color;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Iterator;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
 
 
 public class WhiteBoard extends JFrame {
@@ -52,6 +52,10 @@ public class WhiteBoard extends JFrame {
 	private JTable table;
 	private DataTable dTable;
 	private Point pt;
+	private Canvas can;
+	private Server serverAccepter;
+	private Client clientHandler;
+	private ArrayList<ObjectOutputStream> outputs;
 	/**
 	 * Launch the application.
 	 */
@@ -76,12 +80,10 @@ public class WhiteBoard extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 850, 400);
-		
-		// DRAWING CANVAS
-		
-		final Canvas can = new Canvas();
+		can = new Canvas();
 		can.setBackground(Color.WHITE);
-		
+		serverAccepter = null;
+		clientHandler = null;
 		// MENU BAR
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -178,105 +180,19 @@ public class WhiteBoard extends JFrame {
 		JMenuItem mntmStartServer = new JMenuItem("Start Server");
 		mnConnection.add(mntmStartServer);
 		mntmStartServer.addActionListener(new ActionListener() {
-			class Server extends Thread{
-				
-				private int port;
-
-				public Server(int port) {
-					this.port = port;
-				}
-				
-				public void run() {
-			        try {
-			            ServerSocket serverSocket = new ServerSocket(port);
-			            while (true) {
-			                Socket toClient = null;
-			                toClient = serverSocket.accept();
-			                //addOutput(new ObjectOutputStream(toClient.getOutputStream()));
-			            }
-			        } catch (IOException ex) {
-			            ex.printStackTrace(); 
-			        }
-			    }
-			}
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String result = JOptionPane.showInputDialog("Enter Port Number (100 - 25565)", 0);
-				while (Integer.parseInt(result) < 100 || Integer.parseInt(result) > 25565)
-				{
-					result = JOptionPane.showInputDialog("Enter a Valid Port Number from 100 to 25565", 0);
-				}
-				if (result != null) {
-		            System.out.println("server: start");
-		            Server serverAccepter = new Server(Integer.parseInt(result.trim()));
-		            serverAccepter.start();
-		        }
+				doServer();
 			}
 		});
 		JMenuItem mntmJoinServer = new JMenuItem("Join Server");
 		mnConnection.add(mntmJoinServer);
-		mntmStartServer.addActionListener(new ActionListener() {
+		mntmJoinServer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				class Client extends Thread {
-					private String name;
-					private int port;
-					
-					public Client(String name, int port) {
-						this.name = name;
-						this.port = port;
-					}
-					
-					public void run() {
-				        try {
-				            Socket toServer = new Socket(name, port);
-				            ObjectInputStream in = new ObjectInputStream(toServer.getInputStream());
-				            while (true) {
-				            	String verb = (String) in.readObject();
-				                String xmlString = (String) in.readObject();
-				                XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(xmlString.getBytes()));
-				                DShapeModel shape = (DShapeModel) decoder.readObject();
-				                decoder.close();
-				                switch(verb)
-				                {
-				                	case "add":
-				                		can.addShape(shape);
-				                		break;
-				                	case "remove":
-				                		//TODO Remove
-				                		break;
-				                	case "front":
-				                		can.moveSelectedToFront();
-				                		break;
-				                	case "back":
-				                		can.moveSelectedToBack();
-				                		break;
-				                	case "change":
-				                		//TODO
-				                		break;
-				                }
-
-				            }
-				        }
-				        catch (Exception ex) { // IOException and ClassNotFoundException
-				        	ex.printStackTrace();
-				        }				   
-					}
-				}
-				String result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
-				while (result == null)
-				{
-					result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
-				}
-				if (result != null) {
-					String[] parts = result.split(":");
-					Client clientHandler = new Client(parts[0].trim(), Integer.parseInt(parts[1].trim()));
-					clientHandler.start();
-				}
+				doClient();
 			}
 		});
-		
-		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -368,6 +284,16 @@ public class WhiteBoard extends JFrame {
 				DRectModel rectModel = new DRectModel(random, random2, random3, random4, randomColor);
 				can.addShape(rectModel);
 				dTable.addRow(rectModel);
+				if (serverAccepter != null && outputs.size() != 0)
+				{
+					DRect dr = new DRect();
+					dr.setColor(rectModel.getColor());
+					dr.setHeight(rectModel.getHeight());
+					dr.setWidth(rectModel.getWidth());
+					dr.setX(rectModel.getX());
+					dr.setY(rectModel.getY());
+					doSend("add", dr);
+				}
 			}
 		});
 		
@@ -482,7 +408,7 @@ public class WhiteBoard extends JFrame {
 		table = new JTable(dTable);
 		scrollPane.setViewportView(table);
 		
-		// Group buttons together with gaps and all the positioning stuff......
+				// Group buttons together with gaps and all the positioning stuff......
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
@@ -538,8 +464,136 @@ public class WhiteBoard extends JFrame {
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE))
 		);
-		
-
 		contentPane.setLayout(gl_contentPane);
 	}
+	//Server
+			class Server extends Thread {
+				
+				private int port;
+
+				public Server(int port) {
+					this.port = port;
+				}
+				
+				public void run() {
+			        try {
+			            ServerSocket serverSocket = new ServerSocket(port);
+			            while (true) {
+			                Socket toClient = null;
+			                toClient = serverSocket.accept();
+			                outputs = new ArrayList<ObjectOutputStream>();
+			                addOutput(new ObjectOutputStream(toClient.getOutputStream()));
+			            }
+			        } catch (IOException ex) {
+			            ex.printStackTrace(); 
+			        }
+			    }
+			}
+			
+
+			//Client
+			class Client extends Thread {
+				private String name;
+				private int port;
+				
+				public Client(String name, int port) {
+					this.name = name;
+					this.port = port;
+				}
+				
+				public void run() {
+			        try {
+			            Socket toServer = new Socket(name, port);
+			            ObjectInputStream in = new ObjectInputStream(toServer.getInputStream());
+			            while (true) {
+			                String xmlString = (String) in.readObject();
+			                XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(xmlString.getBytes()));
+			                Command cmd = (Command) decoder.readObject();
+			                decoder.close();
+			                switch(cmd.getCommand())
+			                {
+			                	case "add":
+			                		can.addShape(cmd.getShape());
+			                		dTable.addRow(cmd.getShape().getShapeModel());
+			                		break;
+			                	case "remove":
+			                		//TODO Remove
+			                		break;
+			                	case "front":
+			                		can.moveSelectedToFront();
+			                		break;
+			                	case "back":
+			                		can.moveSelectedToBack();
+			                		break;
+			                	case "change":
+			                		//TODO
+			                		break;
+			                }
+			            }
+			        }
+			        catch (Exception ex) { // IOException and ClassNotFoundException
+			        	ex.printStackTrace();
+			        }				   
+				}
+			}
+
+
+
+			public void doClient() {
+
+				String result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
+				while (result == null)
+				{
+					result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
+				}
+				if (result != null) {
+					String[] parts = result.split(":");
+					clientHandler = new Client(parts[0].trim(), Integer.parseInt(parts[1].trim()));
+					clientHandler.start();
+				}
+			}
+
+
+			public void doServer() {
+				String result = JOptionPane.showInputDialog("Enter Port Number (100 - 25565)", 5555);
+				while (Integer.parseInt(result) < 100 || Integer.parseInt(result) > 25565)
+				{
+					result = JOptionPane.showInputDialog("Enter a Valid Port Number from 100 to 25565", 5555);
+				}
+				if (result != null) {
+					System.out.println("server: start");
+					serverAccepter = new Server(Integer.parseInt(result.trim()));
+					serverAccepter.start();
+				}
+			}
+		    public void doSend(String command, DShape shape) {
+		        Command cmd = new Command();
+		        cmd.setCommand(command);
+		        cmd.setShape(shape);
+		        sendRemote(cmd);
+		    }
+		    public synchronized void addOutput(ObjectOutputStream out) {
+		        outputs.add(out);
+		    }
+		    public synchronized void sendRemote(Command message) {
+		        // Convert the message object into an xml string.
+		        OutputStream memStream = new ByteArrayOutputStream();
+		        XMLEncoder encoder = new XMLEncoder(memStream);
+		        encoder.writeObject(message);
+		        encoder.close();
+		        String xmlString = memStream.toString();
+		        // Now write that xml string to all the clients.
+		        Iterator<ObjectOutputStream> it = outputs.iterator();
+		        while (it.hasNext()) {
+		            ObjectOutputStream out = it.next();
+		            try {
+		                out.writeObject(xmlString);
+		                out.flush();
+		            }
+		            catch (Exception ex) {
+		                ex.printStackTrace();
+		                it.remove();
+		            }
+		        }
+		    }
 }
