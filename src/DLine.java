@@ -7,7 +7,7 @@ public class DLine extends DShape {
 	DLineModel dLModel;
 
 	public DLine() {
-		dLModel = new DLineModel(0, 0, 0, 0, Color.GRAY);
+		dLModel = new DLineModel(0, 0, 0, 0, Color.GRAY, 0);
 	}
 
 	public void draw(Graphics g) {

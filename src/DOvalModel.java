@@ -3,9 +3,9 @@ import java.awt.geom.Ellipse2D;
 
 public class DOvalModel extends DShapeModel
 {
-	public DOvalModel(int x, int y, int width, int height, Color color) 
+	public DOvalModel(int x, int y, int width, int height, Color color, int ID) 
 	{
-		super(x, y, width, height, color);
+		super(x, y, width, height, color, ID);
 		setOval(new Ellipse2D.Double(x,y, width, height));
 	}
 	private Ellipse2D o;

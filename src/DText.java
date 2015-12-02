@@ -8,7 +8,7 @@ public class DText extends DShape{
 	private String input;
 	
 	public DText(){
-		dTModel = new DTextModel(0, 0, 0, 0, Color.GRAY);
+		dTModel = new DTextModel(0, 0, 0, 0, Color.GRAY, 0);
 	}
 
 	public void draw(Graphics g) {

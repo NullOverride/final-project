@@ -5,7 +5,7 @@ import javax.swing.table.AbstractTableModel;
 
 public class DataTable extends AbstractTableModel {
 
-	public String[] colNames = { "X", "Y", "Width", "Height" };
+	public String[] colNames = { "ID", "X", "Y", "Width", "Height" };
 	
 	public ArrayList<DShapeModel> data;
 	
@@ -28,12 +28,14 @@ public class DataTable extends AbstractTableModel {
 		switch(property)
 		{
 		case 0:
-			return data.get(shape).getX();
+			return data.get(shape).getID();
 		case 1:
-			return data.get(shape).getY();
+			return data.get(shape).getX();
 		case 2:
-			return data.get(shape).getWidth();
+			return data.get(shape).getY();
 		case 3:
+			return data.get(shape).getWidth();
+		case 4:
 			return data.get(shape).getHeight();
 		}
 		return null;
@@ -48,8 +50,7 @@ public class DataTable extends AbstractTableModel {
 	{
 		for(int i = 0; i < data.size(); i++)
 		{
-			DShapeModel d = data.get(i);
-			if(shape.getWidth() == d.getWidth() && shape.getHeight() == d.getHeight() && shape.getX() == d.getX() && shape.getY() == d.getY())
+			if (data.get(i).getID() == shape.getID())
 			{
 				data.remove(i);
 				break;
@@ -61,11 +62,11 @@ public class DataTable extends AbstractTableModel {
 	public void moveRowUp(DShapeModel shape) {
 		for(int i = 1; i < data.size(); i++)
 		{
-			DShapeModel d = data.get(i);
-			if(shape.getWidth() == d.getWidth() && shape.getHeight() == d.getHeight() && shape.getX() == d.getX() && shape.getY() == d.getY())
+			if (data.get(i).getID() == shape.getID())
 			{
+				DShapeModel temp = data.get(i);
 				data.set(i, data.get(i - 1));
-				data.set(i - 1, d);
+				data.set(i - 1, temp);
 				fireTableRowsUpdated(i - 1, i);
 				break;
 			}
@@ -75,27 +76,24 @@ public class DataTable extends AbstractTableModel {
 	public void moveRowDown(DShapeModel shape) {
 		for(int i = 0; i < data.size() - 1; i++)
 		{
-			DShapeModel d = data.get(i);
-			if(shape.getWidth() == d.getWidth() && shape.getHeight() == d.getHeight() && shape.getX() == d.getX() && shape.getY() == d.getY())
+			if (data.get(i).getID() == shape.getID())
 			{
+				DShapeModel temp = data.get(i);
 				data.set(i, data.get(i + 1));
-				data.set(i + 1, d);
+				data.set(i + 1, temp);
 				fireTableRowsUpdated(i, i + 1);
-				break;
 			}
 		}
 	}
 	
-	public void updateRow(DShape shape)
+	public void updateRow(DShapeModel shape)
 	{
 		for(int i = 0; i < data.size(); i++)
 		{
-			DShapeModel d = data.get(i);
-			if(shape.getWidth() == d.getWidth() && shape.getHeight() == d.getHeight())
+			if(data.get(i).getID() == shape.getID())
 			{
-				data.set(i, shape.getShapeModel());
-				
-				fireTableRowsUpdated(i,i);
+				data.set(i, shape);
+				fireTableRowsUpdated(i, i);
 				break;
 			}
 		}

@@ -10,15 +10,17 @@ public class DShapeModel {
 	private int width;
 	private int height;
 	private Color color;
+	private int ID;
 	
 	// Constructor
 	
-	public DShapeModel(int x, int y, int width, int height, Color color){
+	public DShapeModel(int x, int y, int width, int height, Color color, int ID){
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.setColor(color);
+		this.ID = ID;
 	}
 
 	// Getters
@@ -28,9 +30,6 @@ public class DShapeModel {
 	}
 	public Color getColor() {
 		return color;
-	}
-	public void setColor(Color color) {
-		this.color = color;
 	}
 	public int getX() {
 		return x;
@@ -43,6 +42,9 @@ public class DShapeModel {
 	}
 	public int getHeight() {
 		return height;
+	}
+	public int getID() {
+		return ID;
 	}
 	
 	// Setters
@@ -71,5 +73,11 @@ public class DShapeModel {
 	public void setHeight(int height) {
 		this.height = height;
 	}
-	
+	public void setColor(Color color) {
+		this.color = color;
+	}
+	public void setID(int ID)
+	{
+		this.ID = ID;
+	}
 }

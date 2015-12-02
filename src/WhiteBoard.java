@@ -267,10 +267,11 @@ public class WhiteBoard extends JFrame {
 					repaint();
 				}
 				repaint();
-				dTable.updateRow(can.getSelected());
+				dTable.updateRow(can.getSelected().getShapeModel());
 				if (serverAccepter != null && outputs.size() > 0)
 				{
-					sync(); // Bad and inefficient
+					//sync(); // Bad and inefficient
+					doSend("change", can.getSelected());
 				}
 			}
 		};
@@ -288,17 +289,13 @@ public class WhiteBoard extends JFrame {
 		btnRectangle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Creation code
-				DRectModel rectModel = new DRectModel(25, 25, 50, 50, Color.LIGHT_GRAY);
-				can.addShape(rectModel);
+				DRectModel rectModel = new DRectModel(25, 25, 50, 50, Color.LIGHT_GRAY, can.getCollection().size() + 1);
+				DRect dr = new DRect();
+				dr.setAll(rectModel.getX(), rectModel.getY(), rectModel.getWidth(), rectModel.getHeight(), rectModel.getColor(), rectModel.getID());
+				can.addShape(dr);
 				dTable.addRow(rectModel);
 				if (serverAccepter != null && outputs.size() > 0)
 				{
-					DRect dr = new DRect();
-					dr.setColor(rectModel.getColor());
-					dr.setHeight(rectModel.getHeight());
-					dr.setWidth(rectModel.getWidth());
-					dr.setX(rectModel.getX());
-					dr.setY(rectModel.getY());
 					doSend("add", dr);
 				}
 			}
@@ -308,17 +305,13 @@ public class WhiteBoard extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Creation code
-				DOvalModel ovalModel = new DOvalModel(25, 25, 50, 50, Color.LIGHT_GRAY);
-				can.addShape(ovalModel);
+				DOvalModel ovalModel = new DOvalModel(25, 25, 50, 50, Color.LIGHT_GRAY, can.getCollection().size() + 1);
+				DOval dO = new DOval();
+				dO.setAll(ovalModel.getX(), ovalModel.getY(), ovalModel.getWidth(), ovalModel.getHeight(), ovalModel.getColor(), ovalModel.getID());
+				can.addShape(dO);
 				dTable.addRow(ovalModel);
 				if (serverAccepter != null && outputs.size() > 0)
 				{
-					DOval dO = new DOval();
-					dO.setColor(ovalModel.getColor());
-					dO.setHeight(ovalModel.getHeight());
-					dO.setWidth(ovalModel.getWidth());
-					dO.setX(ovalModel.getX());
-					dO.setY(ovalModel.getY());
 					doSend("add", dO);
 				}
 			}
@@ -328,17 +321,13 @@ public class WhiteBoard extends JFrame {
 		btnLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Creation code
-				DLineModel lineModel = new DLineModel(25, 25, 50, 50, Color.LIGHT_GRAY);
-				can.addShape(lineModel);
+				DLineModel lineModel = new DLineModel(25, 25, 50, 50, Color.LIGHT_GRAY, can.getCollection().size() + 1);
+				DLine dL = new DLine();
+				dL.setAll(lineModel.getX(), lineModel.getY(), lineModel.getWidth(), lineModel.getHeight(), lineModel.getColor(), lineModel.getID());
+				can.addShape(dL);
 				dTable.addRow(lineModel);
 				if (serverAccepter != null && outputs.size() > 0)
 				{
-					DLine dL = new DLine();
-					dL.setColor(lineModel.getColor());
-					dL.setHeight(lineModel.getHeight());
-					dL.setWidth(lineModel.getWidth());
-					dL.setX(lineModel.getX());
-					dL.setY(lineModel.getY());
 					doSend("add", dL);
 				}
 			}
@@ -348,19 +337,16 @@ public class WhiteBoard extends JFrame {
 		btnText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Creation code
-				DTextModel textModel = new DTextModel(25, 25, 75, 50, Color.LIGHT_GRAY);
+				DTextModel textModel = new DTextModel(25, 25, 75, 50, Color.LIGHT_GRAY, can.getCollection().size() + 1);
 				String text = textField.getText();
-				can.setText(text);
-				can.addShape(textModel);
+				//can.setText(text);
+				DText dT = new DText();
+				dT.setAll(textModel.getX(), textModel.getY(), textModel.getWidth(), textModel.getHeight(), textModel.getColor(), textModel.getID());
+				dT.setInput(text);
+				can.addShape(dT);
 				dTable.addRow(textModel);
 				if (serverAccepter != null && outputs.size() > 0)
 				{
-					DText dT = new DText();
-					dT.setColor(textModel.getColor());
-					dT.setHeight(textModel.getHeight());
-					dT.setWidth(textModel.getWidth());
-					dT.setX(textModel.getX());
-					dT.setY(textModel.getY());
 					doSend("add", dT);
 				}
 			}
@@ -377,13 +363,14 @@ public class WhiteBoard extends JFrame {
 					can.changeColor(JColorChooser.showDialog(null, "Choose a Color", getForeground()));
 					if (serverAccepter != null && outputs.size() > 0)
 					{
-						sync(); // Bad and inefficient
+						//sync(); // Bad and inefficient
+						doSend("change", can.getSelected());
 					}
 				}
 			}
 		});
 		
-		textField = new JTextField();
+		textField = new JTextField("Hello");
 		textField.setColumns(10);
 		
 		// FONT SELECTOR
@@ -469,6 +456,7 @@ public class WhiteBoard extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				doClient();
 				can.reset();
+				// Disable all buttons on client except save
 				mntmJoinServer.setEnabled(false);
 				mntmStartServer.setEnabled(false);
 				mntmNew.setEnabled(false);
@@ -632,10 +620,8 @@ public class WhiteBoard extends JFrame {
 			                		dTable.moveRowDown(cmd.getShape().getShapeModel());
 			                		break;
 			                	case "change":
-			                		//TODO
-			                		break;
-			                	case "select":
-			                		can.setSelected(cmd.getShape());
+			                		can.updateShape(cmd.getShape());
+			                		dTable.updateRow(cmd.getShape().getShapeModel());
 			                		break;
 			                	case "reset":
 			                		can.reset();

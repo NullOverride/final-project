@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 public class DShape {
 
-	DShapeModel dSM;
+	private DShapeModel dSM;
 	
 	public DShape(){
-		dSM = new DShapeModel(0, 0, 0, 0, Color.gray);
+		dSM = new DShapeModel(0, 0, 0, 0, Color.gray, 0);
 	}
 	public void draw(Graphics g) {
 		g.setColor(dSM.getColor());
@@ -37,6 +37,18 @@ public class DShape {
 	public void setHeight(int height) {
 		dSM.setHeight(height);
 	}
+	public void setID(int ID) {
+		dSM.setID(ID);
+	}
+	public void setAll(int x, int y, int width, int height, Color color, int ID)
+	{
+		setX(x);
+		setY(y);
+		setWidth(width);
+		setHeight(height);
+		setColor(color);
+		setID(ID);
+	}
 	
 	
 	public Color getColor() {
@@ -45,17 +57,17 @@ public class DShape {
 	public int getX() {
 		return (int) dSM.getX();
 	}
-	
 	public int getY() {
 		return (int) dSM.getY();
 	}
-	
 	public int getWidth() {
 		return (int) dSM.getWidth();
 	}
-	
 	public int getHeight() {
 		return (int) dSM.getHeight();
+	}
+	public int getID() {
+		return dSM.getID();
 	}
 	public DShapeModel getShapeModel() {
 		return dSM;

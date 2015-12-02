@@ -6,8 +6,8 @@ public class DLineModel extends DShapeModel{
 
 	private Line2D l;
 	
-	public DLineModel(int x, int y, int width, int height, Color color) {
-		super(x, y, width, height, color);
+	public DLineModel(int x, int y, int width, int height, Color color, int ID) {
+		super(x, y, width, height, color, ID);
 		setLine(new Line2D.Double(x,y,width,height));
 	}
 

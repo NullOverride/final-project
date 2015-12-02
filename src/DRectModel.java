@@ -6,8 +6,8 @@ public class DRectModel extends DShapeModel {
 	
 	private Rectangle r;
 
-	public DRectModel(int x, int y, int width, int height, Color color) {
-		super(x, y, width, height, color);
+	public DRectModel(int x, int y, int width, int height, Color color, int ID) {
+		super(x, y, width, height, color, ID);
 		setRect(new Rectangle(x,y,width,height));
 	}
 

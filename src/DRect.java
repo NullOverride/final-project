@@ -7,7 +7,7 @@ public class DRect extends DShape {
 	DRectModel dRModel;
 	
 	public DRect(){
-		dRModel = new DRectModel(0, 0, 0, 0, Color.GRAY);
+		dRModel = new DRectModel(0, 0, 0, 0, Color.GRAY, 0);
 	}
 	
 	public void draw(Graphics g) {

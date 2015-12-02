@@ -11,7 +11,6 @@ public class Canvas extends JPanel {
 	private ArrayList<DShape> collection;
 	private DShape selected;
 	private final int KNOB_SIZE = 9;
-	private String text;
 
 	public Canvas(){
 		collection = new ArrayList<DShape>();
@@ -50,56 +49,7 @@ public class Canvas extends JPanel {
 	
 	public void addShape(DShape shape) {
 		collection.add(shape);
-		repaint();
-	}
-	
-	public void addShape(DShapeModel shape) {
-		if (shape instanceof DRectModel) 
-		{
-			DRect rect = new DRect();
-			rect.setColor(shape.getColor());
-			rect.setX(shape.getX());
-			rect.setY(shape.getY());
-			rect.setWidth(shape.getWidth());
-			rect.setHeight(shape.getHeight());
-			collection.add(rect);
-			setSelected(rect);
-		}
-		else if(shape instanceof DOvalModel)
-		{
-			DOval oval = new DOval();
-			oval.setColor(shape.getColor());
-			oval.setX(shape.getX());
-			oval.setY(shape.getY());
-			oval.setWidth(shape.getWidth());
-			oval.setHeight(shape.getHeight());
-			collection.add(oval);
-			setSelected(oval);
-		}
-		else if(shape instanceof DLineModel)
-        {
-            DLine line = new DLine();
-            line.setColor(shape.getColor());
-            line.setX(shape.getX());
-            line.setY(shape.getY());
-            line.setWidth(shape.getWidth());
-            line.setHeight(shape.getHeight());
-            collection.add(line);
-            setSelected(line);
-        }
-		else if(shape instanceof DTextModel)
-        {
-            DText textShape = new DText();
-            textShape.setColor(shape.getColor());
-            textShape.setX(shape.getX());
-            textShape.setY(shape.getY());
-            textShape.setWidth(shape.getWidth());
-            textShape.setHeight(shape.getHeight());
-            
-            textShape.setInput(text);
-            collection.add(textShape);
-            setSelected(textShape);
-        }
+		setSelected(shape);
 		repaint();
 	}
 
@@ -181,9 +131,14 @@ public class Canvas extends JPanel {
 		selected.getShapeModel().setX(x);
 		selected.getShapeModel().setY(y);
 	}
-	
-	public void setText(String t)
-	{
-		text = t;
+
+	public void updateShape(DShape shape) {
+		for(DShape d : collection)
+		{
+			if(d.getID() == shape.getID())
+			{
+				d = shape;
+			}
+		}
 	}
 }
