@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -43,6 +44,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+import javax.swing.SwingConstants;
+import java.awt.FlowLayout;
 
 
 public class WhiteBoard extends JFrame {
@@ -79,16 +82,23 @@ public class WhiteBoard extends JFrame {
 		setTitle("White Board Turbo 2000");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 850, 400);
+		setBounds(100, 100, 800, 400);
 		can = new Canvas();
+		FlowLayout flowLayout = (FlowLayout) can.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
 		can.setBackground(Color.WHITE);
 		serverAccepter = null;
 		clientHandler = null;
+		outputs = new ArrayList<>();
+		
 		// MENU BAR
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
+		
+		//////////////////////////////////
+		//FILE I/O
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
@@ -162,59 +172,47 @@ public class WhiteBoard extends JFrame {
 				if(result != null)
 				{
 					try {
+						DShape selected = can.getSelected();
+						can.setSelected(null);
 						BufferedImage image = (BufferedImage) can.createImage(can.getWidth(), can.getHeight());
 						Graphics g = image.getGraphics();
 				        can.paintAll(g);
 				        g.dispose();
 				        javax.imageio.ImageIO.write(image, "PNG", new File(result));
+				        can.setSelected(selected);
 					} catch (IOException o) {
 						o.printStackTrace();
 					}
 				}
 			}
 		});
+		//////////////////////////////////
 		
-		JMenu mnConnection = new JMenu("Connection");
-		menuBar.add(mnConnection);
 		
-		JMenuItem mntmStartServer = new JMenuItem("Start Server");
-		mnConnection.add(mntmStartServer);
-		mntmStartServer.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				doServer();
-			}
-		});
-		JMenuItem mntmJoinServer = new JMenuItem("Join Server");
-		mnConnection.add(mntmJoinServer);
-		mntmJoinServer.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				doClient();
-			}
-		});
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
-		//Select a shape
-		can.addMouseListener(new MouseAdapter() {
+		//////////////////////////////////
+		//CANVAS MOUSE LISTENERS
+		MouseAdapter mouseAdapter = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				pt = e.getPoint();
 				can.setSelected(e.getX(), e.getY());
+				if(serverAccepter != null && outputs.size() != 0)
+				{
+					doSend("select", can.getSelected());
+				}
 			}
 			public void mouseClicked(MouseEvent e) {
 				pt = e.getPoint();
 				repaint();
 			}
-			public void mouseReleased(MouseEvent e) {
-				can.setSelected(e.getX(), e.getY());
-			}
-		});
-		
+		};
+
 		//Drag a shape
-		can.addMouseMotionListener(new MouseMotionAdapter() {
+		MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
 			private int dx;
 			private int dy;
 			
@@ -270,11 +268,21 @@ public class WhiteBoard extends JFrame {
 				}
 				repaint();
 				dTable.updateRow(can.getSelected());
+				if (serverAccepter != null && outputs.size() > 0)
+				{
+					sync(); // Bad and inefficient
+				}
 			}
-		});
-		// BUTTONS
+		};
+		can.addMouseListener(mouseAdapter);
+		can.addMouseMotionListener(mouseMotionAdapter);
+		//////////////////////////////////
 		
+		
+		//////////////////////////////////
+		// SHAPE BUTTONS
 		JLabel lblAdd = new JLabel("ADD");
+		lblAdd.setHorizontalAlignment(SwingConstants.LEFT);
 		
 		JButton btnRectangle = new JButton("Rect");
 		btnRectangle.addActionListener(new ActionListener() {
@@ -283,7 +291,7 @@ public class WhiteBoard extends JFrame {
 				DRectModel rectModel = new DRectModel(25, 25, 50, 50, Color.LIGHT_GRAY);
 				can.addShape(rectModel);
 				dTable.addRow(rectModel);
-				if (serverAccepter != null && outputs.size() != 0)
+				if (serverAccepter != null && outputs.size() > 0)
 				{
 					DRect dr = new DRect();
 					dr.setColor(rectModel.getColor());
@@ -303,6 +311,16 @@ public class WhiteBoard extends JFrame {
 				DOvalModel ovalModel = new DOvalModel(25, 25, 50, 50, Color.LIGHT_GRAY);
 				can.addShape(ovalModel);
 				dTable.addRow(ovalModel);
+				if (serverAccepter != null && outputs.size() > 0)
+				{
+					DOval dO = new DOval();
+					dO.setColor(ovalModel.getColor());
+					dO.setHeight(ovalModel.getHeight());
+					dO.setWidth(ovalModel.getWidth());
+					dO.setX(ovalModel.getX());
+					dO.setY(ovalModel.getY());
+					doSend("add", dO);
+				}
 			}
 		});
 		
@@ -313,6 +331,16 @@ public class WhiteBoard extends JFrame {
 				DLineModel lineModel = new DLineModel(25, 25, 50, 50, Color.LIGHT_GRAY);
 				can.addShape(lineModel);
 				dTable.addRow(lineModel);
+				if (serverAccepter != null && outputs.size() > 0)
+				{
+					DLine dL = new DLine();
+					dL.setColor(lineModel.getColor());
+					dL.setHeight(lineModel.getHeight());
+					dL.setWidth(lineModel.getWidth());
+					dL.setX(lineModel.getX());
+					dL.setY(lineModel.getY());
+					doSend("add", dL);
+				}
 			}
 		});
 		
@@ -321,21 +349,36 @@ public class WhiteBoard extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// Creation code
 				DTextModel textModel = new DTextModel(25, 25, 75, 50, Color.LIGHT_GRAY);
-				
 				String text = textField.getText();
 				can.setText(text);
-				
 				can.addShape(textModel);
 				dTable.addRow(textModel);
+				if (serverAccepter != null && outputs.size() > 0)
+				{
+					DText dT = new DText();
+					dT.setColor(textModel.getColor());
+					dT.setHeight(textModel.getHeight());
+					dT.setWidth(textModel.getWidth());
+					dT.setX(textModel.getX());
+					dT.setY(textModel.getY());
+					doSend("add", dT);
+				}
 			}
 		});
+		//////////////////////////////////
 		
+		//////////////////////////////////
+		//TEXT / COLOR / ARRANGEMENT
 		JButton btnSetColor = new JButton("Set Color");
 		btnSetColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(can.getSelected() != null)
 				{
 					can.changeColor(JColorChooser.showDialog(null, "Choose a Color", getForeground()));
+					if (serverAccepter != null && outputs.size() > 0)
+					{
+						sync(); // Bad and inefficient
+					}
 				}
 			}
 		});
@@ -353,6 +396,10 @@ public class WhiteBoard extends JFrame {
 				{
 					can.moveSelectedToFront();
 					dTable.moveRowUp(can.getSelected().getShapeModel());
+					if(serverAccepter != null && outputs.size() != 0)
+					{
+						doSend("front", can.getSelected());
+					}
 				}
 			}
 		});
@@ -364,6 +411,10 @@ public class WhiteBoard extends JFrame {
 				{
 					can.moveSelectedToBack();
 					dTable.moveRowDown(can.getSelected().getShapeModel());
+					if(serverAccepter != null && outputs.size() != 0)
+					{
+						doSend("back", can.getSelected());
+					}
 				}
 			}
 		});
@@ -376,50 +427,118 @@ public class WhiteBoard extends JFrame {
 					dTable.removeRow(can.getSelected().getShapeModel());
 					can.removeSelected();
 					repaint();
+					if(serverAccepter != null && outputs.size() != 0)
+					{
+						doSend("remove", can.getSelected());
+					}
 				}
 			}
 		});
+		//////////////////////////////////
 		
-		// TABLE
+		//////////////////////////////////
+		//CONNECTION AND SERVER 
+		
+		// Labels (Client Mode/Server Mode
+		JLabel lblClientMode = new JLabel("CLIENT MODE");
+		lblClientMode.setForeground(Color.RED);
+		lblClientMode.setVisible(false);
+
+		JLabel lblServerMode = new JLabel("SERVER MODE");
+		lblServerMode.setHorizontalAlignment(SwingConstants.LEFT);
+		lblServerMode.setForeground(Color.RED);
+		lblServerMode.setVisible(false);
+		
+		JMenu mnConnection = new JMenu("Connection");
+		menuBar.add(mnConnection);
+		
+		JMenuItem mntmStartServer = new JMenuItem("Start Server");
+		mnConnection.add(mntmStartServer);
+		mntmStartServer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doServer();
+				mnConnection.setEnabled(false);
+				lblServerMode.setVisible(true);
+			}
+		});
+		JMenuItem mntmJoinServer = new JMenuItem("Join Server");
+		mnConnection.add(mntmJoinServer);
+		mntmJoinServer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doClient();
+				can.reset();
+				mntmJoinServer.setEnabled(false);
+				mntmStartServer.setEnabled(false);
+				mntmNew.setEnabled(false);
+				mntmOpen.setEnabled(false);
+				btnLine.setEnabled(false);
+				btnMoveToBack.setEnabled(false);
+				btnMoveToFront.setEnabled(false);
+				btnNewButton.setEnabled(false);
+				btnRectangle.setEnabled(false);
+				btnRemoveShape.setEnabled(false);
+				btnSetColor.setEnabled(false);
+				btnText.setEnabled(false);
+				lblClientMode.setVisible(true);
+				can.removeMouseListener(mouseAdapter);
+				can.removeMouseMotionListener(mouseMotionAdapter);
+			}
+		});
+		//////////////////////////////////
+		
+		//////////////////////////////////
+		// DATA TABLE
 		dTable = new DataTable();
 		JScrollPane scrollPane = new JScrollPane();
 		table = new JTable(dTable);
 		scrollPane.setViewportView(table);
+		//////////////////////////////////
 		
-				// Group buttons together with gaps and all the positioning stuff......
+		//////////////////////////////////
+		// POSITIONING
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblAdd)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnRectangle)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnNewButton)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnLine)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnText))
-						.addComponent(btnSetColor)
-						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(btnMoveToFront)
-							.addGap(16)
-							.addComponent(btnMoveToBack)
-							.addGap(18)
-							.addComponent(btnRemoveShape))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(can, GroupLayout.PREFERRED_SIZE, 387, GroupLayout.PREFERRED_SIZE))
+							.addComponent(btnMoveToBack)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnRemoveShape, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGap(23))
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+							.addComponent(btnSetColor)
+							.addGroup(gl_contentPane.createSequentialGroup()
+								.addGap(2)
+								.addComponent(lblAdd)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnRectangle)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnNewButton)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnLine)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnText))
+							.addGroup(gl_contentPane.createSequentialGroup()
+								.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addComponent(lblServerMode)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(lblClientMode)))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
+							.addGap(3)))
+					.addGap(5)
+					.addComponent(can, GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(can, GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
@@ -428,23 +547,26 @@ public class WhiteBoard extends JFrame {
 						.addComponent(btnNewButton)
 						.addComponent(btnLine)
 						.addComponent(btnText))
-					.addGap(18)
+					.addPreferredGap(ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
 					.addComponent(btnSetColor)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblServerMode)
+						.addComponent(lblClientMode))
 					.addGap(13)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnRemoveShape)
 						.addComponent(btnMoveToFront)
-						.addComponent(btnMoveToBack))
+						.addComponent(btnMoveToBack)
+						.addComponent(btnRemoveShape))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE))
+				.addComponent(can, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
 		);
 		contentPane.setLayout(gl_contentPane);
 	}
-	//Server
+			//Server Class
 			class Server extends Thread {
 				
 				private int port;
@@ -461,15 +583,18 @@ public class WhiteBoard extends JFrame {
 			                toClient = serverSocket.accept();
 			                outputs = new ArrayList<ObjectOutputStream>();
 			                addOutput(new ObjectOutputStream(toClient.getOutputStream()));
+			                	sync();
 			            }
 			        } catch (IOException ex) {
-			            ex.printStackTrace(); 
+			            ex.printStackTrace();
+			            JOptionPane.showMessageDialog(rootPane, "Failed to Start Server. Please restart the application.");
+			            System.exit(0); // Bad way to handle
 			        }
 			    }
 			}
 			
 
-			//Client
+			//Client Class
 			class Client extends Thread {
 				private String name;
 				private int port;
@@ -495,30 +620,39 @@ public class WhiteBoard extends JFrame {
 			                		dTable.addRow(cmd.getShape().getShapeModel());
 			                		break;
 			                	case "remove":
-			                		//TODO Remove
+			                		dTable.removeRow(cmd.getShape().getShapeModel());
+			                		can.removeSelected(); // fix
 			                		break;
 			                	case "front":
 			                		can.moveSelectedToFront();
+			                		dTable.moveRowUp(cmd.getShape().getShapeModel());
 			                		break;
 			                	case "back":
 			                		can.moveSelectedToBack();
+			                		dTable.moveRowDown(cmd.getShape().getShapeModel());
 			                		break;
 			                	case "change":
 			                		//TODO
+			                		break;
+			                	case "select":
+			                		can.setSelected(cmd.getShape());
+			                		break;
+			                	case "reset":
+			                		can.reset();
+			                		dTable.reset();
 			                		break;
 			                }
 			            }
 			        }
 			        catch (Exception ex) { // IOException and ClassNotFoundException
 			        	ex.printStackTrace();
+			        	JOptionPane.showMessageDialog(rootPane, "Failed to Connect. Please restart the application.");
+			        	System.exit(0); //bad way to handle
 			        }				   
 				}
 			}
 
-
-
 			public void doClient() {
-
 				String result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
 				while (result == null)
 				{
@@ -528,9 +662,9 @@ public class WhiteBoard extends JFrame {
 					String[] parts = result.split(":");
 					clientHandler = new Client(parts[0].trim(), Integer.parseInt(parts[1].trim()));
 					clientHandler.start();
+					JOptionPane.showMessageDialog(can, "Successful connection to server.");
 				}
 			}
-
 
 			public void doServer() {
 				String result = JOptionPane.showInputDialog("Enter Port Number (100 - 25565)", 5555);
@@ -539,11 +673,12 @@ public class WhiteBoard extends JFrame {
 					result = JOptionPane.showInputDialog("Enter a Valid Port Number from 100 to 25565", 5555);
 				}
 				if (result != null) {
-					System.out.println("server: start");
 					serverAccepter = new Server(Integer.parseInt(result.trim()));
 					serverAccepter.start();
+					JOptionPane.showMessageDialog(can, "Server started successfully.");
 				}
 			}
+			
 		    public void doSend(String command, DShape shape) {
 		        Command cmd = new Command();
 		        cmd.setCommand(command);
@@ -573,5 +708,14 @@ public class WhiteBoard extends JFrame {
 		                it.remove();
 		            }
 		        }
+		    }
+		    public void sync() {
+		    	if (outputs.size() != 0) {
+		    		doSend("reset", null);
+		    		for(DShape s: can.getCollection())
+		    		{
+		    			doSend("add", s);
+		    		}
+		    	}
 		    }
 }

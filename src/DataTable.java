@@ -36,7 +36,6 @@ public class DataTable extends AbstractTableModel {
 		case 3:
 			return data.get(shape).getHeight();
 		}
-
 		return null;
 	}
 	
@@ -70,8 +69,7 @@ public class DataTable extends AbstractTableModel {
 				fireTableRowsUpdated(i - 1, i);
 				break;
 			}
-		}
-		
+		}		
 	}
 	
 	public void moveRowDown(DShapeModel shape) {
@@ -110,6 +108,7 @@ public class DataTable extends AbstractTableModel {
 	
 	public void reset() {
 		data = new ArrayList<>();
+		fireTableDataChanged();
 	}
 
 }

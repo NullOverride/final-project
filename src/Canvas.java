@@ -100,7 +100,6 @@ public class Canvas extends JPanel {
             collection.add(textShape);
             setSelected(textShape);
         }
-		
 		repaint();
 	}
 
@@ -122,6 +121,7 @@ public class Canvas extends JPanel {
 			}
 		}	
 	}
+	
 	public void changeColor(Color color) {
 		for(DShape shape: collection)
 		{
@@ -146,6 +146,7 @@ public class Canvas extends JPanel {
 		}
 		repaint();
 	}
+	
 	public void moveSelectedToBack() {
 		for (int i = 1; i < collection.size(); i++)
 		{
@@ -174,11 +175,13 @@ public class Canvas extends JPanel {
 		collection = new ArrayList<DShape>();
 		setSelected(null);
 	}
+	
 	public void setNewLocation(int x, int y)
 	{
 		selected.getShapeModel().setX(x);
 		selected.getShapeModel().setY(y);
 	}
+	
 	public void setText(String t)
 	{
 		text = t;
