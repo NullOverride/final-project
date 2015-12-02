@@ -12,8 +12,10 @@ public class DText extends DShape{
 
 	public void draw(Graphics g) {
 		g.setColor(getColor());
+		int stringlen = (int) g.getFontMetrics().getStringBounds("Hello", g).getWidth();
+		int start = getWidth()/2 - stringlen/2;
 		Font myFont = new Font("Dialog", Font.PLAIN, 24);
-		g.drawString("Hello", getX(), getY());
+		g.drawString("Hello", start + getX(), start + getY());
 		g.setFont(myFont);
 	}
 }

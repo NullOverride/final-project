@@ -302,11 +302,44 @@ public class WhiteBoard extends JFrame {
 				int x = e.getX();
 				int y = e.getY();
 				
+				dx = x - pt.x;
+				dy = y - pt.y;
+				
 				DShape sp = can.getSelected();
-				if(sp.getBounds().contains(pt))
+				if(pt.x < sp.getX()+sp.getWidth() +9 && pt.x > sp.getX()+sp.getWidth()-9 	//bottom right
+						&& pt.y < sp.getY()+sp.getHeight() + 9 && pt.y > sp.getY() + sp.getHeight() - 9)
 				{
-					dx = x - pt.x;
-					dy = y - pt.y;
+					sp.setWidth(sp.getWidth() + dx);
+					sp.setHeight(sp.getHeight() +  dy);
+					pt = e.getPoint();
+				}
+				else if(pt.x < sp.getX()+9 && pt.x > sp.getX()-9 	//top left
+						&& pt.y < sp.getY() + 9 && pt.y > sp.getY() - 9)
+				{
+					sp.setX(sp.getX() + dx);
+					sp.setY(sp.getY() +dy);
+					sp.setWidth(sp.getWidth() - dx);
+					sp.setHeight(sp.getHeight() -  dy);
+					pt = e.getPoint();
+				}
+				else if(pt.x < sp.getX()+sp.getWidth() +9 && pt.x > sp.getX()+sp.getWidth()-9 	//top right
+						&& pt.y < sp.getY()+ 9 && pt.y > sp.getY() - 9)
+				{
+					sp.setY(sp.getY()+dy);
+					sp.setWidth(sp.getWidth() + dx);
+					sp.setHeight(sp.getHeight() - dy);
+					pt = e.getPoint();
+				}
+				else if(pt.x < sp.getX()+9 && pt.x > sp.getX()-9 	//bottom left
+						&& pt.y < sp.getY()+sp.getHeight() + 9 && pt.y > sp.getY() + sp.getHeight() - 9)
+				{
+					sp.setX(sp.getX()+dx);
+					sp.setWidth(sp.getWidth() -dx);
+					sp.setHeight(sp.getHeight() + dy);
+					pt = e.getPoint();
+				}
+				else if(sp.getBounds().contains(pt))
+				{
 					sp.setX(sp.getX() + dx);
 					sp.setY(sp.getY() + dy);
 					pt = e.getPoint();

@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 public class Canvas extends JPanel {
 	private ArrayList<DShape> collection;
 	private DShape selected;
+	private final int KNOB_SIZE = 9;
 
 	public Canvas(){
 		collection = new ArrayList<DShape>();
@@ -31,7 +32,7 @@ public class Canvas extends JPanel {
 				for(Point p : shape.getKnobs())
 				{
 					g.setColor(Color.black);
-					g.fillRect(((int)p.getX())-9, ((int)p.getY())-9, knobWH, knobWH);
+					g.fillRect(((int)p.getX())-KNOB_SIZE, ((int)p.getY())-KNOB_SIZE, knobWH, knobWH);
 				}
 			}
 			else if(shape.equals(selected) && (shape instanceof DLine))
@@ -40,7 +41,7 @@ public class Canvas extends JPanel {
 				for(Point p : shape.getLineKnobs())
 				{
 					g.setColor(Color.black);
-					g.fillRect(((int)p.getX())-9, ((int)p.getY())-9, knobWH, knobWH);
+					g.fillRect(((int)p.getX())-KNOB_SIZE, ((int)p.getY())-KNOB_SIZE, knobWH, knobWH);
 				}
 			}
 		}
