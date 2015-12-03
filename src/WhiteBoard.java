@@ -132,7 +132,8 @@ public class WhiteBoard extends JFrame {
 												new File(result))));
 						DShape[] array = (DShape[]) xmlIn.readObject();
 						xmlIn.close();
-						// TODO :ADD CLEAR - clear()
+						can.reset();
+						dTable.reset();
 						for(DShape d: array) {
 			                can.addShape(d);
 			            }
