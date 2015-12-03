@@ -35,7 +35,7 @@ public class Canvas extends JPanel {
 			}
 			else if(shape.equals(selected) && (shape instanceof DLine))
 			{
-				for(Rectangle r : shape.getKnobs())
+				for(Rectangle r : shape.getLineKnobs())
 				{
 					g.setColor(Color.black);
 					g.fillRect(r.x, r.y, r.width, r.height);
