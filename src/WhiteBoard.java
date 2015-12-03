@@ -254,10 +254,9 @@ public class WhiteBoard extends JFrame {
 					}
 					else if(selectedKnob == 1)
 					{
-						anchor = sp.getKnobs().get(1).getLocation();
-						sp.setX(sp.getX()+dx);
-						sp.setWidth(sp.getWidth() -dx);
-						sp.setHeight(sp.getHeight() + dy);
+						anchor = sp.getKnobs().get(0).getLocation();
+						sp.setWidth(sp.getWidth() + dx);
+						sp.setHeight(sp.getHeight() +  dy);
 						pt = e.getPoint();
 					}
 				}
