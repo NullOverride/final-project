@@ -234,33 +234,33 @@ public class WhiteBoard extends JFrame {
 				dy = y - pt.y;
 				
 				DShape sp = can.getSelected();
-//				if(can.getSelected() instanceof DLine)
-//				{
-//					for(Rectangle r : sp.getLineKnobs())
-//					{
-//						if(r.contains(pt))
-//						{
-//							selectedKnob = sp.getKnobs().indexOf(r);
-//						}
-//					}
-//					if(selectedKnob == 0)
-//					{
-//						anchor = sp.getKnobs().get(1).getLocation();
-//						sp.setX(sp.getX() + dx);
-//						sp.setY(sp.getY() +dy);
-//						sp.setWidth(sp.getWidth() - dx);
-//						sp.setHeight(sp.getHeight() -  dy);
-//						pt = e.getPoint();
-//					}
-//					else if(selectedKnob == 1)
-//					{
-//						anchor = sp.getKnobs().get(1).getLocation();
-//						sp.setX(sp.getX()+dx);
-//						sp.setWidth(sp.getWidth() -dx);
-//						sp.setHeight(sp.getHeight() + dy);
-//						pt = e.getPoint();
-//					}
-//				}
+				if(can.getSelected() instanceof DLine)
+				{
+					for(Rectangle r : sp.getLineKnobs())
+					{
+						if(r.contains(pt))
+						{
+							selectedKnob = sp.getKnobs().indexOf(r);
+						}
+					}
+					if(selectedKnob == 0)
+					{
+						anchor = sp.getKnobs().get(1).getLocation();
+						sp.setX(sp.getX() + dx);
+						sp.setY(sp.getY() +dy);
+						sp.setWidth(sp.getWidth() - dx);
+						sp.setHeight(sp.getHeight() -  dy);
+						pt = e.getPoint();
+					}
+					else if(selectedKnob == 1)
+					{
+						anchor = sp.getKnobs().get(1).getLocation();
+						sp.setX(sp.getX()+dx);
+						sp.setWidth(sp.getWidth() -dx);
+						sp.setHeight(sp.getHeight() + dy);
+						pt = e.getPoint();
+					}
+				}
 				for(Rectangle r : sp.getKnobs())
 				{
 					if(r.contains(pt))
@@ -273,11 +273,10 @@ public class WhiteBoard extends JFrame {
 				{
 					anchor = sp.getKnobs().get(0).getLocation();
 					sp.setWidth(sp.getWidth() + dx);
-					if(sp.getWidth() < -1)
 					sp.setHeight(sp.getHeight() +  dy);
 					pt = e.getPoint();
 				}
-				else if(selectedKnob == 0) // Top Left
+				else if(selectedKnob == 0) //Top Left
 				{
 					anchor = sp.getKnobs().get(3).getLocation();					
 					sp.setX(sp.getX() + dx);
@@ -286,7 +285,7 @@ public class WhiteBoard extends JFrame {
 					sp.setHeight(sp.getHeight() -  dy);
 					pt = e.getPoint();
 				}
-				else if(selectedKnob == 2)
+				else if(selectedKnob == 2) //Top Right
 				{
 					anchor = sp.getKnobs().get(1).getLocation();
 					sp.setY(sp.getY()+dy);
@@ -294,7 +293,7 @@ public class WhiteBoard extends JFrame {
 					sp.setHeight(sp.getHeight() - dy);
 					pt = e.getPoint();
 				}
-				else if(selectedKnob == 1)
+				else if(selectedKnob == 1) //Bottom Left
 				{
 					anchor = sp.getKnobs().get(2).getLocation();
 					sp.setX(sp.getX()+dx);
@@ -387,7 +386,7 @@ public class WhiteBoard extends JFrame {
 				if (!textField.getText().isEmpty()){
 					// Creation code
 					DTextModel textModel = new DTextModel(25, 25, 75, 50, Color.LIGHT_GRAY, can.getCollection().size() + 1);
-					String text = textField.getText();
+					String text = "Hello";
 					//can.setText(text);
 					DText dT = new DText();
 					dT.setAll(textModel.getX(), textModel.getY(), textModel.getWidth(), textModel.getHeight(), textModel.getColor(), textModel.getID());
@@ -431,11 +430,12 @@ public class WhiteBoard extends JFrame {
 //			public void actionPerformed(ActionEvent e) {
 //				if(can.getSelected() != null && can.getSelected() instanceof DText)
 //				{
-//					textField.setText(can.getSelected());
+//					can.getSelected().getID();
+//					textField.setText(can.getCollection().get(can.getSelected().getID()));
 //				}
 //			}
 //		});
-		
+//		
 		
 		final JButton btnMoveToFront = new JButton("Move To Front");
 		btnMoveToFront.addActionListener(new ActionListener() {

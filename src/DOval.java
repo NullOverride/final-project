@@ -12,7 +12,27 @@ public class DOval extends DShape {
 	
 	public void draw(Graphics g) {
 		g.setColor(getColor());
-		g.fillOval(getX(), getY(), getWidth(), getHeight());
+		
+		boolean HeightIsNegative=false;
+		boolean WidthIsNegative =false;
+		
+		int tempWidth = 0;
+		int tempHeight= 0;
+		if(getWidth()<0) {
+			setWidth(Math.abs(getWidth()));
+			tempWidth = getWidth();
+			WidthIsNegative = true;
+		}
+		if(getHeight()<0){
+			setHeight(Math.abs(getHeight()));
+			tempHeight = getHeight();
+			HeightIsNegative = true;
+		}
+		
+		g.fillOval(getX()-tempWidth, getY()-tempHeight, getWidth(), getHeight());
+		
+		if(HeightIsNegative)setHeight(getHeight()*(-1));
+		if(WidthIsNegative) setWidth(getWidth()*(-1));
 	}
 
 }
