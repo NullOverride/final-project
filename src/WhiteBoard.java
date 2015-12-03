@@ -618,8 +618,8 @@ public class WhiteBoard extends JFrame {
 			                		dTable.addRow(cmd.getShape().getShapeModel());
 			                		break;
 			                	case "remove":
+			                		can.removeShape(cmd.getShape());
 			                		dTable.removeRow(cmd.getShape().getShapeModel());
-			                		can.removeSelected(); // fix
 			                		break;
 			                	case "front":
 			                		can.moveSelectedToFront();
@@ -708,9 +708,9 @@ public class WhiteBoard extends JFrame {
 		    public void sync() {
 		    	if (outputs.size() != 0) {
 		    		doSend("reset", null);
-		    		for(DShape s: can.getCollection())
+		    		for(int i = 0; i < can.getCollection().size(); i++)
 		    		{
-		    			doSend("add", s);
+		    			doSend("add", can.getCollection().get(i));
 		    		}
 		    	}
 		    }

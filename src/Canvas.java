@@ -91,6 +91,8 @@ public class Canvas extends JPanel {
 				DShape temp = collection.get(i);
 				collection.set(i, collection.get(i + 1));
 				collection.set(i + 1, temp);
+//				collection.get(i).setID(i + 1);
+//				collection.get(i + 1).setID(temp.getID());
 				break;
 			}
 		}
@@ -105,6 +107,8 @@ public class Canvas extends JPanel {
 				DShape temp = collection.get(i);
 				collection.set(i, collection.get(i - 1));
 				collection.set(i - 1, temp);
+//				collection.get(i).setID(i - 1);
+//				collection.get(i - 1).setID(temp.getID());
 				break;
 			}
 		}
@@ -116,9 +120,17 @@ public class Canvas extends JPanel {
 		{
 			if (collection.get(i).equals(getSelected()))
 			{
+				for(DShape shape : collection)
+				{
+					if(shape.getID() > collection.get(i).getID())
+					{
+						shape.setID(shape.getID() - 1);
+					}
+				}
 				collection.remove(i);
 			}
 		}
+		repaint();
 	}
 	
 	public void reset() {
@@ -137,8 +149,28 @@ public class Canvas extends JPanel {
 		{
 			if(d.getID() == shape.getID())
 			{
-				d = shape;
+				d.setAll(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight(), shape.getColor(), shape.getID());
 			}
 		}
+		repaint();
 	}
+
+	public void removeShape(DShape shape) {
+		for(int i = 0; i < collection.size(); i++)
+		{
+			if (shape.getID() == collection.get(i).getID())
+			{
+				for(DShape s : collection)
+				{
+					if(s.getID() > collection.get(i).getID())
+					{
+						s.setID(shape.getID() - 1);
+					}
+				}
+				collection.remove(i);
+			}
+		}
+		repaint();
+	}
+	
 }

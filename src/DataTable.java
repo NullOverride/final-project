@@ -52,6 +52,13 @@ public class DataTable extends AbstractTableModel {
 		{
 			if (data.get(i).getID() == shape.getID())
 			{
+				for(DShapeModel mod : data)
+				{
+					if(mod.getID() > shape.getID())
+					{
+						mod.setID(mod.getID() - 1);
+					}
+				}
 				data.remove(i);
 				break;
 			}
@@ -82,6 +89,7 @@ public class DataTable extends AbstractTableModel {
 				data.set(i, data.get(i + 1));
 				data.set(i + 1, temp);
 				fireTableRowsUpdated(i, i + 1);
+				break;
 			}
 		}
 	}
