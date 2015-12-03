@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -223,7 +224,8 @@ public class WhiteBoard extends JFrame {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				
-				
+				Point anchor;
+				int  selectedKnob = 5;
 				int x = e.getX();
 				int y = e.getY();
 				
@@ -231,16 +233,21 @@ public class WhiteBoard extends JFrame {
 				dy = y - pt.y;
 				
 				DShape sp = can.getSelected();
-				//four point corners
-				if(pt.x < sp.getX()+sp.getWidth() +9 && pt.x > sp.getX()+sp.getWidth()-9 	//bottom right
-						&& pt.y < sp.getY()+sp.getHeight() + 9 && pt.y > sp.getY() + sp.getHeight() - 9)
+				for(Rectangle r : sp.getKnobs())
 				{
+					if(r.contains(pt))
+					{
+						selectedKnob = sp.getKnobs().indexOf(r);
+					}
+				}
+				if(selectedKnob == 3)
+				{
+					anchor = sp.getKnobs().get(0).getLocation();
 					sp.setWidth(sp.getWidth() + dx);
 					sp.setHeight(sp.getHeight() +  dy);
 					pt = e.getPoint();
 				}
-				else if(pt.x < sp.getX()+9 && pt.x > sp.getX()-9 	//top left
-						&& pt.y < sp.getY() + 9 && pt.y > sp.getY() - 9)
+				else if(selectedKnob == 0)
 				{
 					sp.setX(sp.getX() + dx);
 					sp.setY(sp.getY() +dy);
@@ -248,16 +255,14 @@ public class WhiteBoard extends JFrame {
 					sp.setHeight(sp.getHeight() -  dy);
 					pt = e.getPoint();
 				}
-				else if(pt.x < sp.getX()+sp.getWidth() +9 && pt.x > sp.getX()+sp.getWidth()-9 	//top right
-						&& pt.y < sp.getY()+ 9 && pt.y > sp.getY() - 9)
+				else if(selectedKnob == 2)
 				{
 					sp.setY(sp.getY()+dy);
 					sp.setWidth(sp.getWidth() + dx);
 					sp.setHeight(sp.getHeight() - dy);
 					pt = e.getPoint();
 				}
-				else if(pt.x < sp.getX()+9 && pt.x > sp.getX()-9 	//bottom left
-						&& pt.y < sp.getY()+sp.getHeight() + 9 && pt.y > sp.getY() + sp.getHeight() - 9)
+				else if(selectedKnob == 1)
 				{
 					sp.setX(sp.getX()+dx);
 					sp.setWidth(sp.getWidth() -dx);

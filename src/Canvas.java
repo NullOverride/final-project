@@ -2,6 +2,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -28,20 +29,18 @@ public class Canvas extends JPanel {
 			shape.draw(g);
 			if(shape.equals(selected) && !(shape instanceof DLine))
 			{
-				int knobWH = 18;
-				for(Point p : shape.getKnobs())
+				for(Rectangle r : shape.getKnobs())
 				{
 					g.setColor(Color.black);
-					g.fillRect(((int)p.getX())-KNOB_SIZE, ((int)p.getY())-KNOB_SIZE, knobWH, knobWH);
+					g.fillRect(r.x, r.y, r.width, r.height);
 				}
 			}
 			else if(shape.equals(selected) && (shape instanceof DLine))
 			{
-				int knobWH = 18;
-				for(Point p : shape.getLineKnobs())
+				for(Rectangle r : shape.getKnobs())
 				{
 					g.setColor(Color.black);
-					g.fillRect(((int)p.getX())-KNOB_SIZE, ((int)p.getY())-KNOB_SIZE, knobWH, knobWH);
+					g.fillRect(r.x, r.y, r.width, r.height);
 				}
 			}
 		}

@@ -73,20 +73,19 @@ public class DShape {
 		return dSM;
 	}
 	
-	public ArrayList<Point> getKnobs() {
-		ArrayList<Point> points = new ArrayList<Point>();
-		points.add(new Point(getX()+1,getY()+1)); //Top Left
-		points.add(new Point(getX()+1,getY()+getHeight()-1)); //Bottom Left
-		points.add(new Point(getX()+getWidth()-1,getY()+1)); //Top Right
-		points.add(new Point(getX()+getWidth()-1,getY()+getHeight()-1)); //Bottom Right
-		return points;
+	public ArrayList<Rectangle> getKnobs() {
+		ArrayList<Rectangle> knobs = new ArrayList<Rectangle>();
+		knobs.add(new Rectangle(getX()-9,getY()-9,18,18)); //Top Left
+		knobs.add(new Rectangle(getX()-9,getY()+getHeight()-9,18,18)); //Bottom Left
+		knobs.add(new Rectangle(getX()+getWidth()-9,getY()-9,18,18)); //Top Right
+		knobs.add(new Rectangle(getX()+getWidth()-9,getY()+getHeight()-9,18,18)); //Bottom Right
+		return knobs;
 	}
-	public ArrayList<Point> getLineKnobs(){
-		ArrayList<Point> points = new ArrayList<Point>();
-		points.add(new Point(getX()+1, getY()+1));
-		points.add(new Point(getWidth()+1, getHeight()+1));
-		
-		return points;
+	public ArrayList<Rectangle> getLineKnobs(){
+		ArrayList<Rectangle> knobs = new ArrayList<Rectangle>();
+		knobs.add(new Rectangle(getX()-9, getY()-9,18,18));
+		knobs.add(new Rectangle(getWidth()-9, getHeight()-9,18,18));
+		return knobs;
 	}
 
 
