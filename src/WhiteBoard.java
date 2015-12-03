@@ -1,10 +1,9 @@
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
-import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -27,6 +26,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.Iterator;
 
 import javax.swing.GroupLayout;
@@ -45,10 +45,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.EmptyBorder;
 import javax.swing.SwingConstants;
-
-import java.awt.FlowLayout;
+import javax.swing.border.EmptyBorder;
 
 
 public class WhiteBoard extends JFrame {
@@ -233,6 +231,7 @@ public class WhiteBoard extends JFrame {
 				dy = y - pt.y;
 				
 				DShape sp = can.getSelected();
+				//four point corners
 				if(pt.x < sp.getX()+sp.getWidth() +9 && pt.x > sp.getX()+sp.getWidth()-9 	//bottom right
 						&& pt.y < sp.getY()+sp.getHeight() + 9 && pt.y > sp.getY() + sp.getHeight() - 9)
 				{
@@ -347,20 +346,22 @@ public class WhiteBoard extends JFrame {
 		final JButton btnText = new JButton("Text");
 		btnText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Creation code
-				DTextModel textModel = new DTextModel(25, 25, 75, 50, Color.LIGHT_GRAY, can.getCollection().size() + 1);
-				String text = textField.getText();
-				//can.setText(text);
-				DText dT = new DText();
-				dT.setAll(textModel.getX(), textModel.getY(), textModel.getWidth(), textModel.getHeight(), textModel.getColor(), textModel.getID());
-				dT.setInput(text);
-				String font = (String) comboBox.getSelectedItem();
-				dT.setFont(font);
-				can.addShape(dT);
-				dTable.addRow(textModel);
-				if (serverAccepter != null && outputs.size() > 0)
-				{
-					doSend("add", dT);
+				if (!textField.getText().isEmpty()){
+					// Creation code
+					DTextModel textModel = new DTextModel(25, 25, 75, 50, Color.LIGHT_GRAY, can.getCollection().size() + 1);
+					String text = textField.getText();
+					//can.setText(text);
+					DText dT = new DText();
+					dT.setAll(textModel.getX(), textModel.getY(), textModel.getWidth(), textModel.getHeight(), textModel.getColor(), textModel.getID());
+					dT.setInput(text);
+					String font = (String) comboBox.getSelectedItem();
+					dT.setFont(font);
+					can.addShape(dT);
+					dTable.addRow(textModel);
+					if (serverAccepter != null && outputs.size() > 0)
+					{
+						doSend("add", dT);
+					}
 				}
 			}
 		});
@@ -564,7 +565,9 @@ public class WhiteBoard extends JFrame {
 				.addComponent(can, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
 		);
 		contentPane.setLayout(gl_contentPane);
-	}
+		//////////////////////////////////
+	}// outside constructor 
+	
 			//Server Class
 			class Server extends Thread {
 				
@@ -648,7 +651,7 @@ public class WhiteBoard extends JFrame {
 			        }				   
 				}
 			}
-
+			//start client
 			public void doClient() {
 				String result = JOptionPane.showInputDialog("Connect to host:port", "127.0.0.1:5555");
 				while (result == null)
@@ -662,7 +665,7 @@ public class WhiteBoard extends JFrame {
 					JOptionPane.showMessageDialog(can, "Successful connection to server.");
 				}
 			}
-
+			//start server
 			public void doServer() {
 				String result = JOptionPane.showInputDialog("Enter Port Number (100 - 25565)", 5555);
 				while (Integer.parseInt(result) < 100 || Integer.parseInt(result) > 25565)
@@ -675,16 +678,18 @@ public class WhiteBoard extends JFrame {
 					JOptionPane.showMessageDialog(can, "Server started successfully.");
 				}
 			}
-			
+			//add client to server
+		    public synchronized void addOutput(ObjectOutputStream out) {
+		        outputs.add(out);
+		    }
+		    //send a command object
 		    public void doSend(String command, DShape shape) {
 		        Command cmd = new Command();
 		        cmd.setCommand(command);
 		        cmd.setShape(shape);
 		        sendRemote(cmd);
 		    }
-		    public synchronized void addOutput(ObjectOutputStream out) {
-		        outputs.add(out);
-		    }
+		    //actual writing from server to clients
 		    public synchronized void sendRemote(Command message) {
 		        // Convert the message object into an xml string.
 		        OutputStream memStream = new ByteArrayOutputStream();
@@ -706,6 +711,7 @@ public class WhiteBoard extends JFrame {
 		            }
 		        }
 		    }
+		    //One time sync for clients
 		    public void sync() {
 		    	if (outputs.size() != 0) {
 		    		doSend("reset", null);
