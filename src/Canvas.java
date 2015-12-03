@@ -1,7 +1,6 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -11,8 +10,7 @@ import javax.swing.JPanel;
 public class Canvas extends JPanel {
 	private ArrayList<DShape> collection;
 	private DShape selected;
-	private final int KNOB_SIZE = 9;
-
+	
 	public Canvas(){
 		collection = new ArrayList<DShape>();
 		setSelected(null);
@@ -74,7 +72,7 @@ public class Canvas extends JPanel {
 	public void changeColor(Color color) {
 		for(DShape shape: collection)
 		{
-			if (getSelected().equals(shape))
+			if (getSelected().getID() == shape.getID())
 			{
 				shape.setColor(color);
 			}
@@ -90,8 +88,6 @@ public class Canvas extends JPanel {
 				DShape temp = collection.get(i);
 				collection.set(i, collection.get(i + 1));
 				collection.set(i + 1, temp);
-//				collection.get(i).setID(i + 1);
-//				collection.get(i + 1).setID(temp.getID());
 				break;
 			}
 		}
@@ -106,8 +102,6 @@ public class Canvas extends JPanel {
 				DShape temp = collection.get(i);
 				collection.set(i, collection.get(i - 1));
 				collection.set(i - 1, temp);
-//				collection.get(i).setID(i - 1);
-//				collection.get(i - 1).setID(temp.getID());
 				break;
 			}
 		}
@@ -115,45 +109,9 @@ public class Canvas extends JPanel {
 	}
 	
 	public void removeSelected() {
-		for(int i = 0; i < collection.size(); i++)
-		{
-			if (collection.get(i).equals(getSelected()))
-			{
-				for(DShape shape : collection)
-				{
-					if(shape.getID() > collection.get(i).getID())
-					{
-						shape.setID(shape.getID() - 1);
-					}
-				}
-				collection.remove(i);
-			}
-		}
-		repaint();
+		removeShape(getSelected());
 	}
 	
-	public void reset() {
-		collection = new ArrayList<DShape>();
-		setSelected(null);
-	}
-	
-	public void setNewLocation(int x, int y)
-	{
-		selected.getShapeModel().setX(x);
-		selected.getShapeModel().setY(y);
-	}
-
-	public void updateShape(DShape shape) {
-		for(DShape d : collection)
-		{
-			if(d.getID() == shape.getID())
-			{
-				d.setAll(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight(), shape.getColor(), shape.getID());
-			}
-		}
-		repaint();
-	}
-
 	public void removeShape(DShape shape) {
 		for(int i = 0; i < collection.size(); i++)
 		{
@@ -171,5 +129,22 @@ public class Canvas extends JPanel {
 		}
 		repaint();
 	}
+	
+	public void reset() {
+		collection = new ArrayList<DShape>();
+		setSelected(null);
+	}
+
+	public void updateShape(DShape shape) {
+		for(DShape d : collection)
+		{
+			if(d.getID() == shape.getID())
+			{
+				d.setAll(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight(), shape.getColor(), shape.getID());
+			}
+		}
+		repaint();
+	}
+
 	
 }

@@ -3,12 +3,13 @@ import java.awt.geom.Ellipse2D;
 
 public class DOvalModel extends DShapeModel
 {
+	private Ellipse2D o;
+	
 	public DOvalModel(int x, int y, int width, int height, Color color, int ID) 
 	{
 		super(x, y, width, height, color, ID);
 		setOval(new Ellipse2D.Double(x,y, width, height));
 	}
-	private Ellipse2D o;
 
 	public Ellipse2D getOval() {
 		return o;

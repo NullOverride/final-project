@@ -1,4 +1,4 @@
-
+//Encoded into XML objects using bean
 public class Command {
 
 	public String command;
